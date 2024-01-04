@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:readmore/readmore.dart';
 
 import '../../common_widget/food_step_detail_row.dart';
-import 'meal_schedule_view.dart';
 
 class FoodInfoDetailsView extends StatefulWidget {
   final Map mObj;
@@ -437,9 +436,7 @@ class _FoodInfoDetailsViewState extends State<FoodInfoDetailsView> {
                         padding: const EdgeInsets.symmetric(horizontal: 15),
                         child: RoundButton(
                             title: "Add to ${widget.mObj["name"]} Meal",
-                            onPressed: () {
-                             
-                            }),
+                            onPressed: () {}),
                       ),
                     ],
                   ),

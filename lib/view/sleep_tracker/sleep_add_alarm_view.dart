@@ -1,9 +1,7 @@
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../common/colo_extension.dart';
-import '../../common/common.dart';
 import '../../common_widget/icon_title_next_row.dart';
 import '../../common_widget/round_button.dart';
 
@@ -16,13 +14,12 @@ class SleepAddAlarmView extends StatefulWidget {
 }
 
 class _SleepAddAlarmViewState extends State<SleepAddAlarmView> {
-
   bool positive = false;
-  
+  String bedTime = "09:00 PM";
+  String alarmTime = "05:30 AM";
+
   @override
   Widget build(BuildContext context) {
-    var media = MediaQuery.of(context).size;
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: TColor.white,
@@ -78,27 +75,30 @@ class _SleepAddAlarmViewState extends State<SleepAddAlarmView> {
       body: Container(
         padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 25),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-         
-          
-          
           const SizedBox(
             height: 8,
           ),
           IconTitleNextRow(
               icon: "assets/img/Bed_Add.png",
               title: "Bedtime",
-              time: "09:00 PM",
+              time: bedTime,
               color: TColor.lightGray,
-              onPressed: () {}),
+              onPressed: () async {
+                bedTime = await showingTimePicker(context: context);
+                setState(() {});
+              }),
           const SizedBox(
             height: 10,
           ),
           IconTitleNextRow(
               icon: "assets/img/HoursTime.png",
-              title: "Hours of sleep",
-              time: "8hours 30minutes",
+              title: "Alarm Time",
+              time: alarmTime,
               color: TColor.lightGray,
-              onPressed: () {}),
+              onPressed: () async {
+                alarmTime = await showingTimePicker(context: context);
+                setState(() {});
+              }),
           const SizedBox(
             height: 10,
           ),
@@ -111,7 +111,7 @@ class _SleepAddAlarmViewState extends State<SleepAddAlarmView> {
           const SizedBox(
             height: 10,
           ),
-         Container(
+          Container(
             padding: const EdgeInsets.symmetric(vertical: 8),
             decoration: BoxDecoration(
               color: TColor.lightGray,
@@ -120,8 +120,9 @@ class _SleepAddAlarmViewState extends State<SleepAddAlarmView> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-
-               const SizedBox(width: 15,), 
+                const SizedBox(
+                  width: 15,
+                ),
                 Container(
                   width: 30,
                   height: 30,
@@ -140,15 +141,13 @@ class _SleepAddAlarmViewState extends State<SleepAddAlarmView> {
                     style: TextStyle(color: TColor.gray, fontSize: 12),
                   ),
                 ),
-                
-
                 SizedBox(
                   height: 30,
                   child: Transform.scale(
                     scale: 0.7,
                     child: CustomAnimatedToggleSwitch<bool>(
                       current: positive,
-                      values: [false, true],
+                      values: const [false, true],
                       dif: 0.0,
                       indicatorSize: const Size.square(30.0),
                       animationDuration: const Duration(milliseconds: 200),
@@ -202,12 +201,15 @@ class _SleepAddAlarmViewState extends State<SleepAddAlarmView> {
                     ),
                   ),
                 )
-               
               ],
             ),
           ),
           const Spacer(),
-          RoundButton(title: "Add", onPressed: () {}),
+          RoundButton(
+              title: "Add",
+              onPressed: () {
+                // TODO: update to firebase
+              }),
           const SizedBox(
             height: 20,
           ),
@@ -215,4 +217,19 @@ class _SleepAddAlarmViewState extends State<SleepAddAlarmView> {
       ),
     );
   }
+}
+
+Future<String> showingTimePicker({required BuildContext context}) async {
+  final TimeOfDay? time = await showTimePicker(
+    context: context,
+    initialTime: TimeOfDay.now(),
+    builder: (BuildContext context, Widget? child) {
+      return Directionality(
+        textDirection: TextDirection.rtl,
+        child: child!,
+      );
+    },
+  );
+  // ignore: use_build_context_synchronously
+  return time!.format(context);
 }

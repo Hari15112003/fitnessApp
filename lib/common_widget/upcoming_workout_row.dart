@@ -3,8 +3,16 @@ import 'package:fitness/common/colo_extension.dart';
 import 'package:flutter/material.dart';
 
 class UpcomingWorkoutRow extends StatefulWidget {
-  final Map wObj;
-  const UpcomingWorkoutRow({super.key, required this.wObj});
+  final String image;
+  final String time;
+  final String workOutName;
+  final bool completedOrNot;
+  const UpcomingWorkoutRow(
+      {super.key,
+      required this.image,
+      required this.time,
+      required this.workOutName,
+      required this.completedOrNot});
 
   @override
   State<UpcomingWorkoutRow> createState() => _UpcomingWorkoutRowState();
@@ -13,13 +21,17 @@ class UpcomingWorkoutRow extends StatefulWidget {
 class _UpcomingWorkoutRowState extends State<UpcomingWorkoutRow> {
   bool positive = false;
 
-
+  @override
+  void initState() {
+    positive = widget.completedOrNot;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
         margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
-        padding: const EdgeInsets.all( 10),
+        padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
             color: TColor.white,
             borderRadius: BorderRadius.circular(15),
@@ -29,7 +41,7 @@ class _UpcomingWorkoutRowState extends State<UpcomingWorkoutRow> {
             ClipRRect(
               borderRadius: BorderRadius.circular(30),
               child: Image.asset(
-                widget.wObj["image"].toString(),
+                widget.image.toString(),
                 width: 50,
                 height: 50,
                 fit: BoxFit.cover,
@@ -43,14 +55,14 @@ class _UpcomingWorkoutRowState extends State<UpcomingWorkoutRow> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.wObj["title"].toString(),
+                  widget.workOutName.toString(),
                   style: TextStyle(
                       color: TColor.black,
                       fontSize: 12,
                       fontWeight: FontWeight.w500),
                 ),
                 Text(
-                  widget.wObj["time"].toString(),
+                  widget.time.toString(),
                   style: TextStyle(
                     color: TColor.gray,
                     fontSize: 10,
@@ -58,10 +70,9 @@ class _UpcomingWorkoutRowState extends State<UpcomingWorkoutRow> {
                 ),
               ],
             )),
-
-             CustomAnimatedToggleSwitch<bool>(
+            CustomAnimatedToggleSwitch<bool>(
               current: positive,
-              values: [false, true],
+              values: const [false, true],
               dif: 0.0,
               indicatorSize: const Size.square(30.0),
               animationDuration: const Duration(milliseconds: 200),
@@ -83,9 +94,14 @@ class _UpcomingWorkoutRowState extends State<UpcomingWorkoutRow> {
                         height: 30.0,
                         child: DecoratedBox(
                           decoration: BoxDecoration(
-                            gradient: LinearGradient(colors: TColor.secondaryG),
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(50.0)),
+                            gradient: LinearGradient(
+                              colors: TColor.secondaryG,
+                            ),
+                            borderRadius: const BorderRadius.all(
+                              Radius.circular(
+                                50.0,
+                              ),
+                            ),
                           ),
                         )),
                     child,

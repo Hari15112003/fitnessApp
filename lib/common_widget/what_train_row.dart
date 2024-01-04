@@ -41,7 +41,7 @@ class WhatTrainRow extends StatelessWidget {
                       height: 4,
                     ),
                     Text(
-                      "${wObj["exercises"].toString()} | ${ wObj["time"].toString() }" ,
+                      "${wObj["exercises"].toString()} | ${wObj["time"].toString()}",
                       style: TextStyle(
                         color: TColor.gray,
                         fontSize: 12,
@@ -55,11 +55,21 @@ class WhatTrainRow extends StatelessWidget {
                       height: 30,
                       child: RoundButton(
                           title: "View More",
-                          fontSize: 10,
+                          fontSize: 12,
                           type: RoundButtonType.textGradient,
-                          elevation:0.05,
+                          elevation: 0.05,
                           fontWeight: FontWeight.w400,
-                          onPressed: () {}),
+                          onPressed: () {
+                            //  Navigator.push(
+                            //               context,
+                                          // MaterialPageRoute(
+                                          //     builder: (context) =>
+                                          //         WorkoutDetailView(
+                                          //           workOutName: whatArr[index]
+                                          //               ['title'],
+                                          //           dObj: wObj,
+                                          //         )));
+                          }),
                     )
                   ],
                 ),

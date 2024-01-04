@@ -21,9 +21,12 @@ class _TodaySleepScheduleRowState extends State<TodaySleepScheduleRow> {
         margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-            color: TColor.white,
-            borderRadius: BorderRadius.circular(15),
-            boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 2)]),
+          color: TColor.white,
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: const [
+            BoxShadow(color: Colors.black12, blurRadius: 2),
+          ],
+        ),
         child: Row(
           children: [
             const SizedBox(
@@ -63,8 +66,9 @@ class _TodaySleepScheduleRowState extends State<TodaySleepScheduleRow> {
                       ),
                     ],
                   ),
-
-                  const SizedBox(height: 8,),
+                  const SizedBox(
+                    height: 8,
+                  ),
                   Text(
                     widget.sObj["duration"].toString(),
                     style: TextStyle(
@@ -96,7 +100,7 @@ class _TodaySleepScheduleRowState extends State<TodaySleepScheduleRow> {
                     scale: 0.7,
                     child: CustomAnimatedToggleSwitch<bool>(
                       current: positive,
-                      values: [false, true],
+                      values: const [false, true],
                       dif: 0.0,
                       indicatorSize: const Size.square(30.0),
                       animationDuration: const Duration(milliseconds: 200),

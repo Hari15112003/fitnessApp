@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:simple_animation_progress_bar/simple_animation_progress_bar.dart';
 
 import '../../common/colo_extension.dart';
-import '../../common_widget/round_button.dart';
 import '../../common_widget/today_sleep_schedule_row.dart';
 
 class SleepScheduleView extends StatefulWidget {
@@ -16,7 +15,7 @@ class SleepScheduleView extends StatefulWidget {
 }
 
 class _SleepScheduleViewState extends State<SleepScheduleView> {
-  CalendarAgendaController _calendarAgendaControllerAppBar =
+  final CalendarAgendaController _calendarAgendaControllerAppBar =
       CalendarAgendaController();
   late DateTime _selectedDateAppBBar;
 
@@ -25,10 +24,12 @@ class _SleepScheduleViewState extends State<SleepScheduleView> {
       "name": "Bedtime",
       "image": "assets/img/bed.png",
       "time": "01/06/2023 09:00 PM",
+      //TODO: note set time here
       "duration": "in 6hours 22minutes"
     },
     {
       "name": "Alarm",
+      //TODO: implement alarm here and it's functiom use [flutter pub add alarm]
       "image": "assets/img/alaarm.png",
       "time": "02/06/2023 05:10 AM",
       "duration": "in 14hours 30minutes"
@@ -111,7 +112,7 @@ class _SleepScheduleViewState extends State<SleepScheduleView> {
                   child: Container(
                     width: double.maxFinite,
                     padding: const EdgeInsets.all(20),
-                    height: media.width * 0.4,
+                    height: media.width * 0.45,
                     decoration: BoxDecoration(
                         gradient: LinearGradient(colors: [
                           TColor.primaryColor2.withOpacity(0.4),
@@ -131,25 +132,38 @@ class _SleepScheduleViewState extends State<SleepScheduleView> {
                                 "Ideal Hours for Sleep",
                                 style: TextStyle(
                                   color: TColor.black,
-                                  fontSize: 14,
+                                  fontSize: 15,
                                 ),
                               ),
                               Text(
-                                "8hours 30minutes",
+                                "Age 6 to 12 years Old:",
                                 style: TextStyle(
-                                    color: TColor.primaryColor2,
+                                    color: TColor.primaryColor1,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500),
                               ),
+                              Text(
+                                "9 to 12 hours per day",
+                                style: TextStyle(
+                                    color: TColor.secondaryColor1,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500),
+                              ),
                               const Spacer(),
-                              SizedBox(
-                                width: 110,
-                                height: 35,
-                                child: RoundButton(
-                                    title: "Learn More",
-                                    fontSize: 12,
-                                    onPressed: () {}),
-                              )
+                              Text(
+                                "Teens 13 to 18 years old:",
+                                style: TextStyle(
+                                    color: TColor.primaryColor1,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500),
+                              ),
+                              Text(
+                                "8 to 10 hours per day",
+                                style: TextStyle(
+                                    color: TColor.secondaryColor1,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500),
+                              ),
                             ]),
                         Image.asset(
                           "assets/img/sleep_schedule.png",
@@ -177,27 +191,13 @@ class _SleepScheduleViewState extends State<SleepScheduleView> {
                   controller: _calendarAgendaControllerAppBar,
                   appbar: false,
                   selectedDayPosition: SelectedDayPosition.center,
-                  leading: IconButton(
-                      onPressed: () {},
-                      icon: Image.asset(
-                        "assets/img/ArrowLeft.png",
-                        width: 15,
-                        height: 15,
-                      )),
-                  training: IconButton(
-                      onPressed: () {},
-                      icon: Image.asset(
-                        "assets/img/ArrowRight.png",
-                        width: 15,
-                        height: 15,
-                      )),
+
                   weekDay: WeekDay.short,
                   dayNameFontSize: 12,
                   dayNumberFontSize: 16,
                   dayBGColor: Colors.grey.withOpacity(0.15),
                   titleSpaceBetween: 15,
                   backgroundColor: Colors.transparent,
-                  // fullCalendar: false,
                   fullCalendarScroll: FullCalendarScroll.horizontal,
                   fullCalendarDay: WeekDay.short,
                   selectedDateColor: Colors.white,
@@ -207,7 +207,8 @@ class _SleepScheduleViewState extends State<SleepScheduleView> {
                   initialDate: DateTime.now(),
                   calendarEventColor: TColor.primaryColor2,
                   firstDate: DateTime.now().subtract(const Duration(days: 140)),
-                  lastDate: DateTime.now().add(const Duration(days: 60)),
+                  // TODO: Date set  bed-time and  alarm
+                  lastDate: DateTime.now().add(const Duration(days: 5)),
 
                   onDateSelected: (date) {
                     _selectedDateAppBBar = date;
@@ -217,9 +218,10 @@ class _SleepScheduleViewState extends State<SleepScheduleView> {
                     height: double.maxFinite,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                          colors: TColor.primaryG,
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter),
+                        colors: TColor.primaryG,
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
                       borderRadius: BorderRadius.circular(10.0),
                     ),
                   ),
@@ -267,20 +269,23 @@ class _SleepScheduleViewState extends State<SleepScheduleView> {
                           children: [
                             SimpleAnimationProgressBar(
                               height: 15,
-                              width: media.width - 80,
+                              width: media.width * 0.8,
                               backgroundColor: Colors.grey.shade100,
                               foregrondColor: Colors.purple,
-                              ratio: 0.96,
+                              // TODO:  change value 80 according yo 8-10 hrs time
+                              ratio: 80 / 100,
                               direction: Axis.horizontal,
                               curve: Curves.fastLinearToSlowEaseIn,
                               duration: const Duration(seconds: 3),
                               borderRadius: BorderRadius.circular(7.5),
                               gradientColor: LinearGradient(
-                                  colors: TColor.secondaryG,
-                                  begin: Alignment.centerLeft,
-                                  end: Alignment.centerRight),
+                                colors: TColor.secondaryG,
+                                begin: Alignment.centerLeft,
+                                end: Alignment.centerRight,
+                              ),
                             ),
                             Text(
+                              // TODO: change value according to bedtime to alarm time
                               "96%",
                               style: TextStyle(
                                 color: TColor.black,
@@ -304,6 +309,7 @@ class _SleepScheduleViewState extends State<SleepScheduleView> {
           Navigator.push(
             context,
             MaterialPageRoute(
+              //TODO: implament add view function
               builder: (context) => SleepAddAlarmView(
                 date: _selectedDateAppBBar,
               ),
