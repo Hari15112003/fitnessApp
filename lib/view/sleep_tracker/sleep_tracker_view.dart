@@ -1,10 +1,14 @@
-import 'package:fitness/view/sleep_tracker/sleep_schedule_view.dart';
-import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/material.dart';
+import 'dart:async';
 
+import 'package:alarm/alarm.dart';
+import 'package:fitness/alarm/screens/edit_alarm.dart';
+import 'package:fitness/alarm/screens/ring.dart';
+import 'package:fl_chart/fl_chart.dart' show AxisTitles, BarAreaData, FlBorderData, FlDotCirclePainter, FlDotData, FlGridData, FlLine, FlSpot, FlTapUpEvent, FlTitlesData, FlTouchEvent, LineBarSpot, LineChart, LineChartBarData, LineChartData, LineTooltipItem, LineTouchData, LineTouchResponse, LineTouchTooltipData, ShowingTooltipIndicators, SideTitleWidget, SideTitles, TitleMeta, TouchedSpotIndicatorData;
+import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+import '../../alarm/widgets/tile.dart';
 import '../../common/colo_extension.dart';
-import '../../common_widget/round_button.dart';
-import '../../common_widget/today_sleep_schedule_row.dart';
 
 class SleepTrackerView extends StatefulWidget {
   const SleepTrackerView({super.key});
@@ -14,31 +18,86 @@ class SleepTrackerView extends StatefulWidget {
 }
 
 class _SleepTrackerViewState extends State<SleepTrackerView> {
-  List todaySleepArr = [
-    {
-      "name": "Bedtime",
-      "image": "assets/img/bed.png",
-      "time": "01/06/2023 09:00 PM",
-      "duration": "in 6hours 22minutes"
-    },
-    {
-      "name": "Alarm",
-      "image": "assets/img/alaarm.png",
-      "time": "02/06/2023 05:10 AM",
-      "duration": "in 14hours 30minutes"
-    },
-  ];
-
-  List findEatArr = [
-    {
-      "name": "Breakfast",
-      "image": "assets/img/m_3.png",
-      "number": "120+ Foods"
-    },
-    {"name": "Lunch", "image": "assets/img/m_4.png", "number": "130+ Foods"},
-  ];
-
   List<int> showingTooltipOnSpots = [4];
+  late List<AlarmSettings> alarms;
+
+  static StreamSubscription<AlarmSettings>? subscription;
+
+  @override
+  void initState() {
+    super.initState();
+    if (Alarm.android) {
+      checkAndroidNotificationPermission();
+      checkAndroidExternalStoragePermission();
+    }
+    loadAlarms();
+    subscription ??= Alarm.ringStream.stream.listen(
+      (alarmSettings) => navigateToRingScreen(alarmSettings),
+    );
+  }
+
+  void loadAlarms() {
+    setState(() {
+      alarms = Alarm.getAlarms();
+      alarms.sort((a, b) => a.dateTime.isBefore(b.dateTime) ? 0 : 1);
+    });
+  }
+
+  Future<void> navigateToRingScreen(AlarmSettings alarmSettings) async {
+    await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ExampleAlarmRingScreen(
+            alarmSettings: alarmSettings,
+          ),
+        ));
+    loadAlarms();
+  }
+
+  Future<void> navigateToAlarmScreen(AlarmSettings? settings) async {
+    final res = await showModalBottomSheet<bool?>(
+        context: context,
+        isScrollControlled: true,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        builder: (context) {
+          return FractionallySizedBox(
+            heightFactor: 0.75,
+            child: ExampleAlarmEditScreen(alarmSettings: settings),
+          );
+        });
+
+    if (res != null && res == true) loadAlarms();
+  }
+
+  Future<void> checkAndroidNotificationPermission() async {
+    final status = await Permission.notification.status;
+    if (status.isDenied) {
+      alarmPrint('Requesting notification permission...');
+      final res = await Permission.notification.request();
+      alarmPrint(
+        'Notification permission ${res.isGranted ? '' : 'not'} granted.',
+      );
+    }
+  }
+
+  Future<void> checkAndroidExternalStoragePermission() async {
+    final status = await Permission.storage.status;
+    if (status.isDenied) {
+      alarmPrint('Requesting external storage permission...');
+      final res = await Permission.storage.request();
+      alarmPrint(
+        'External storage permission ${res.isGranted ? '' : 'not'} granted.',
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    subscription?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -264,48 +323,6 @@ class _SleepTrackerViewState extends State<SleepTrackerView> {
                   SizedBox(
                     height: media.width * 0.05,
                   ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 15, horizontal: 15),
-                    decoration: BoxDecoration(
-                      color: TColor.primaryColor2.withOpacity(0.3),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Daily Sleep Schedule",
-                          style: TextStyle(
-                              color: TColor.black,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700),
-                        ),
-                        SizedBox(
-                          width: 70,
-                          height: 25,
-                          child: RoundButton(
-                            title: "Check",
-                            type: RoundButtonType.bgGradient,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400,
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const SleepScheduleView(),
-                                ),
-                              );
-                            },
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: media.width * 0.05,
-                  ),
                   Text(
                     "Today Schedule",
                     style: TextStyle(
@@ -316,17 +333,36 @@ class _SleepTrackerViewState extends State<SleepTrackerView> {
                   SizedBox(
                     height: media.width * 0.03,
                   ),
-                  ListView.builder(
-                      padding: EdgeInsets.zero,
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: todaySleepArr.length,
-                      itemBuilder: (context, index) {
-                        var sObj = todaySleepArr[index] as Map? ?? {};
-                        return TodaySleepScheduleRow(
-                          sObj: sObj,
-                        );
-                      }),
+                  alarms.isNotEmpty
+                      ? SizedBox(
+                          height: 200,
+                          child: ListView.separated(
+                            itemCount: alarms.length,
+                            separatorBuilder: (context, index) =>
+                                const Divider(height: 1),
+                            itemBuilder: (context, index) {
+                              return ExampleAlarmTile(
+                                key: Key(alarms[index].id.toString()),
+                                title: TimeOfDay(
+                                  hour: alarms[index].dateTime.hour,
+                                  minute: alarms[index].dateTime.minute,
+                                ).format(context),
+                                onPressed: () =>
+                                    navigateToAlarmScreen(alarms[index]),
+                                onDismissed: () {
+                                  Alarm.stop(alarms[index].id)
+                                      .then((_) => loadAlarms());
+                                },
+                              );
+                            },
+                          ),
+                        )
+                      : Center(
+                          child: Text(
+                            "No alarms set",
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                        ),
                 ],
               ),
             ),
@@ -334,6 +370,28 @@ class _SleepTrackerViewState extends State<SleepTrackerView> {
               height: media.width * 0.05,
             ),
           ],
+        ),
+      ),
+      floatingActionButton: InkWell(
+        onTap: () {
+          navigateToAlarmScreen(null);
+        },
+        child: Container(
+          width: 55,
+          height: 55,
+          decoration: BoxDecoration(
+              gradient: LinearGradient(colors: TColor.secondaryG),
+              borderRadius: BorderRadius.circular(27.5),
+              boxShadow: const [
+                BoxShadow(
+                    color: Colors.black12, blurRadius: 5, offset: Offset(0, 2))
+              ]),
+          alignment: Alignment.center,
+          child: Icon(
+            Icons.add,
+            size: 20,
+            color: TColor.white,
+          ),
         ),
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:alarm/alarm.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fitness/firebase_options.dart';
 import 'package:fitness/provider/firebase/auth_wrapper.dart';
@@ -11,7 +12,13 @@ import 'provider/firebase/auth_provider.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await Alarm.init();
+  FirebaseFirestore.instance.settings = const Settings(
+      cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED, persistenceEnabled: true);
+  FirebaseFirestore.instance.settings =
+      const Settings(persistenceEnabled: true);
+//  await FirebaseAuth.instance.setPersistenceEnabled(false);
+
+  await Alarm.init(showDebugLogs: true);
   runApp(const MyApp());
 }
 

@@ -10,8 +10,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../../common/colo_extension.dart';
-import '../../common_widget/round_button.dart';
-import 'comparison_view.dart';
 
 class PhotoProgressView extends StatefulWidget {
   const PhotoProgressView({super.key});
@@ -113,68 +111,6 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
                             vertical: 10, horizontal: 20),
                         child: Container(
                           width: double.maxFinite,
-                          padding: const EdgeInsets.all(15),
-                          decoration: BoxDecoration(
-                              color: const Color(0xffFFE5E5),
-                              borderRadius: BorderRadius.circular(20)),
-                          child: Row(
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                    color: TColor.white,
-                                    borderRadius: BorderRadius.circular(30)),
-                                width: 50,
-                                height: 50,
-                                alignment: Alignment.center,
-                                child: Image.asset(
-                                  "assets/img/date_notifi.png",
-                                  width: 30,
-                                  height: 30,
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 8,
-                              ),
-                              Expanded(
-                                child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const Text(
-                                        "Reminder!",
-                                        style: TextStyle(
-                                            color: Colors.red,
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w500),
-                                      ),
-                                      Text(
-                                        "Next Photos Fall On July 08",
-                                        style: TextStyle(
-                                            color: TColor.black,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w700),
-                                      ),
-                                    ]),
-                              ),
-                              Container(
-                                  height: 60,
-                                  alignment: Alignment.topRight,
-                                  child: IconButton(
-                                      onPressed: () {},
-                                      icon: Icon(
-                                        Icons.close,
-                                        color: TColor.gray,
-                                        size: 15,
-                                      )))
-                            ],
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 20),
-                        child: Container(
-                          width: double.maxFinite,
                           padding: const EdgeInsets.all(20),
                           height: media.width * 0.4,
                           decoration: BoxDecoration(
@@ -211,46 +147,46 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
                       SizedBox(
                         height: media.width * 0.05,
                       ),
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 20),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 15, horizontal: 15),
-                        decoration: BoxDecoration(
-                          color: TColor.primaryColor2.withOpacity(0.3),
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Compare my Photo",
-                              style: TextStyle(
-                                  color: TColor.black,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500),
-                            ),
-                            SizedBox(
-                              width: 100,
-                              height: 25,
-                              child: RoundButton(
-                                title: "Compare",
-                                type: RoundButtonType.bgGradient,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const ComparisonView(),
-                                    ),
-                                  );
-                                },
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
+                      // Container(
+                      //   margin: const EdgeInsets.symmetric(horizontal: 20),
+                      //   padding: const EdgeInsets.symmetric(
+                      //       vertical: 15, horizontal: 15),
+                      //   decoration: BoxDecoration(
+                      //     color: TColor.primaryColor2.withOpacity(0.3),
+                      //     borderRadius: BorderRadius.circular(15),
+                      //   ),
+                      // child: Row(
+                      //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //   children: [
+                      //     Text(
+                      //       "Compare my Photo",
+                      //       style: TextStyle(
+                      //           color: TColor.black,
+                      //           fontSize: 14,
+                      //           fontWeight: FontWeight.w500),
+                      //     ),
+                      // SizedBox(
+                      //   width: 100,
+                      //   height: 25,
+                      //   child: RoundButton(
+                      //     title: "Compare",
+                      //     type: RoundButtonType.bgGradient,
+                      //     fontSize: 12,
+                      //     fontWeight: FontWeight.w400,
+                      //     onPressed: () {
+                      //       Navigator.push(
+                      //         context,
+                      //         MaterialPageRoute(
+                      //           builder: (context) =>
+                      //               const ComparisonView(),
+                      //         ),
+                      //       );
+                      //     },
+                      //   ),
+                      // )
+                      //     ],
+                      //   ),
+                      // ),
                       Padding(
                         padding: const EdgeInsets.symmetric(
                             vertical: 10, horizontal: 20),
@@ -264,75 +200,85 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
                                   fontSize: 16,
                                   fontWeight: FontWeight.w700),
                             ),
-                            TextButton(
-                                onPressed: () {},
-                                child: Text(
-                                  "See more",
-                                  style: TextStyle(
-                                      color: TColor.gray, fontSize: 12),
-                                ))
+                            // TextButton(
+                            //     onPressed: () {},
+                            //     child: Text(
+                            //       "See more",
+                            //       style: TextStyle(
+                            //           color: TColor.gray, fontSize: 12),
+                            //     ))
                           ],
                         ),
                       ),
-                      ListView.builder(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: monthPhotoMap.keys.toList().length,
-                          itemBuilder: ((context, index) {
-                            // var pObj = photoArr[index] as Map? ?? {};
-                            // var imaArr = pObj["photo"] as List? ?? [];
-                            // print(monthPhotoMap[
-                            //         monthPhotoMap.keys.toList()[index]]!
-                            //     .length);
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    monthPhotoMap.keys.toList()[index],
-                                    // pObj["time"].toString(),
-                                    style: TextStyle(
-                                        color: TColor.gray, fontSize: 12),
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 100,
-                                  child: ListView.builder(
-                                    scrollDirection: Axis.horizontal,
-                                    padding: EdgeInsets.zero,
-                                    itemCount: monthPhotoMap[
-                                            monthPhotoMap.keys.toList()[index]]!
-                                        .length,
-                                    itemBuilder: ((context, indexRow) {
-                                      return Container(
-                                        margin: const EdgeInsets.symmetric(
-                                            horizontal: 4),
-                                        width: 100,
-                                        decoration: BoxDecoration(
-                                          color: TColor.lightGray,
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          child: Image.network(
-                                            monthPhotoMap[monthPhotoMap.keys
-                                                .toList()[index]]![indexRow],
+                      monthPhotoMap.keys.isNotEmpty
+                          ? ListView.builder(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16),
+                              physics: const NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: monthPhotoMap.keys.toList().length,
+                              itemBuilder: ((context, index) {
+                                // var pObj = photoArr[index] as Map? ?? {};
+                                // var imaArr = pObj["photo"] as List? ?? [];
+                                // print(monthPhotoMap[
+                                //         monthPhotoMap.keys.toList()[index]]!
+                                //     .length);
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        monthPhotoMap.keys.toList()[index],
+                                        // pObj["time"].toString(),
+                                        style: TextStyle(
+                                            color: TColor.gray, fontSize: 12),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 100,
+                                      child: ListView.builder(
+                                        scrollDirection: Axis.horizontal,
+                                        padding: EdgeInsets.zero,
+                                        itemCount: monthPhotoMap[monthPhotoMap
+                                                .keys
+                                                .toList()[index]]!
+                                            .length,
+                                        itemBuilder: ((context, indexRow) {
+                                          return Container(
+                                            margin: const EdgeInsets.symmetric(
+                                                horizontal: 4),
                                             width: 100,
-                                            height: 100,
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                      );
-                                    }),
-                                  ),
-                                ),
-                              ],
-                            );
-                          }))
+                                            decoration: BoxDecoration(
+                                              color: TColor.lightGray,
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                            ),
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              child: Image.network(
+                                                monthPhotoMap[
+                                                    monthPhotoMap.keys.toList()[
+                                                        index]]![indexRow],
+                                                width: 100,
+                                                height: 100,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                          );
+                                        }),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }))
+                          : const Center(
+                              child: Text(
+                                "No Photo has been Uploaded yet",
+                                style: TextStyle(fontSize: 12),
+                              ),
+                            )
                     ],
                   ),
                   SizedBox(
@@ -364,7 +310,7 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
                       TextButton(
                         onPressed: () => pickImageFromCamera(),
                         child: Text(
-                          'Take a pic',
+                          'Camera',
                           style: TextStyle(
                               color: TColor.secondaryColor1, fontSize: 13),
                         ),
@@ -372,7 +318,7 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
                       TextButton(
                         onPressed: () => pickImageFromGallery(),
                         child: Text(
-                          'Choose from Gallery',
+                          'Gallery',
                           style: TextStyle(
                               color: TColor.secondaryColor1, fontSize: 13),
                         ),
@@ -415,6 +361,7 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
       imagePath: image,
       context: context,
     );
+    Navigator.pop(context);
   }
 
   Future pickImageFromCamera() async {
@@ -430,5 +377,6 @@ class _PhotoProgressViewState extends State<PhotoProgressView> {
       imagePath: image,
       context: context,
     );
+    Navigator.pop(context);
   }
 }

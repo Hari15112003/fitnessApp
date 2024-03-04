@@ -32,7 +32,7 @@ class UserModel {
       password: map['password'] ?? '',
       termsAndConditions: map['termsAndConditions'] ?? false,
       gender: map['gender'] ?? '',
-      dateOfBirth: map['dateOfBirth'],
+      dateOfBirth: map['dateOfBirth'] ?? '',
       weight: (map['weight'] ?? 0.0).toDouble(),
       height: (map['height'] ?? 0.0).toDouble(),
       createdAt: map['createdAt'] ?? '',
@@ -53,5 +53,25 @@ class UserModel {
       'uid': uid,
       'createdAt': createdAt,
     };
+  }
+
+  UserModel updateFields(
+    String? name,
+    String? gender,
+    String? dateOfBirth,
+    double? weight,
+    double? height,
+  ) {
+    return UserModel(
+        uid: uid,
+        name: name ?? this.name,
+        email: email,
+        password: password,
+        termsAndConditions: termsAndConditions,
+        gender: gender ?? this.gender,
+        dateOfBirth: dateOfBirth ?? this.dateOfBirth,
+        createdAt: createdAt,
+        weight: weight ?? this.weight,
+        height: height ?? this.height);
   }
 }

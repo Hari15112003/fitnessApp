@@ -1,6 +1,9 @@
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:fitness/common/colo_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../provider/firebase/auth_provider.dart';
 
 class UpcomingWorkoutRow extends StatefulWidget {
   final String image;
@@ -29,6 +32,7 @@ class _UpcomingWorkoutRowState extends State<UpcomingWorkoutRow> {
 
   @override
   Widget build(BuildContext context) {
+    final ap = Provider.of<MyAuthProvider>(context, listen: false);
     return Container(
         margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
         padding: const EdgeInsets.all(10),
@@ -77,12 +81,20 @@ class _UpcomingWorkoutRowState extends State<UpcomingWorkoutRow> {
               indicatorSize: const Size.square(30.0),
               animationDuration: const Duration(milliseconds: 200),
               animationCurve: Curves.linear,
-              onChanged: (b) => setState(() => positive = b),
+              onChanged: (value) {
+                setState(() => positive = value);
+              },
               iconBuilder: (context, local, global) {
                 return const SizedBox();
               },
               defaultCursor: SystemMouseCursors.click,
-              onTap: () => setState(() => positive = !positive),
+              onTap: () async {
+                await ap.updateWorkoutStatusFireBase(
+                    completed: !positive,
+                    workOutName: widget.workOutName.toString(),
+                    context: context);
+                setState(() => positive = !positive);
+              },
               iconsTappable: false,
               wrapperBuilder: (context, global, child) {
                 return Stack(

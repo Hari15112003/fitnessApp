@@ -18,32 +18,76 @@ class ActivityTrackerView extends StatefulWidget {
 class _ActivityTrackerViewState extends State<ActivityTrackerView> {
   int touchedIndex = -1;
 
-  //TODO: requied list of workout;
   List workOutArr = [
+    // 1
     {
-      "image": "assets/img/what_1.png",
+      "image": "assets/photos/fullbody.png",
       "title": "Fullbody Workout",
+      "exercises": "11 Exercises",
+      "time": "32mins"
     },
+    // 2
     {
-      "image": "assets/img/what_2.png",
-      "title": "Lowebody Workout",
+      "image": "assets/photos/upperbody.png",
+      "title": "Upperbody Workout",
+      "exercises": "12 Exercises",
+      "time": "40mins"
     },
+    // 3
     {
-      "image": "assets/img/what_3.png",
-      "title": "AB Workout",
-    }
-  ];
-
-  List latestArr = [
-    {
-      "image": "assets/img/pic_4.png",
-      "title": "Drinking 300ml Water",
-      "time": "About 1 minutes ago"
+      "image": "assets/photos/lowerbody.png",
+      "title": "Lowerbody Workout",
+      "exercises": "14 Exercises",
+      "time": "20mins"
     },
+    //4
     {
-      "image": "assets/img/pic_5.png",
-      "title": "Eat Snack (Fitbar)",
-      "time": "About 3 hours ago"
+      "image": "assets/photos/abs.png",
+      "title": "ABS Workout",
+      "exercises": "14 Exercises",
+      "time": "20mins"
+    },
+// 5
+    {
+      "image": "assets/photos/leg.png",
+      "title": "Leg Workout",
+      "exercises": "14 Exercises",
+      "time": "20mins"
+    },
+//  6
+    {
+      "image": "assets/photos/chest.png",
+      "title": "Chest Workout",
+      "exercises": "14 Exercises",
+      "time": "20mins"
+    },
+//  7
+    {
+      "image": "assets/photos/shoulder.png",
+      "title": "Shoulder Workout",
+      "exercises": "14 Exercises",
+      "time": "20mins"
+    },
+//  8
+    {
+      "image": "assets/photos/arm.png",
+      "title": "Arm Workout",
+      "exercises": "14 Exercises",
+      "time": "20mins"
+    },
+//  9
+    {
+      "image": "assets/photos/back.png",
+      "title": "Back Workout",
+      "exercises": "14 Exercises",
+      "time": "20mins"
+    },
+//  10
+    {
+      "image": "assets/photos/plyometric.png",
+      "title": "Plyometric  Exercise",
+      "exercises": "14 Exercises",
+      "time": "20mins"
     },
   ];
   final collectionRef = FirebaseFirestore.instance.collection("users");
@@ -117,9 +161,38 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
                 if (prin != null &&
                     prin.containsKey((DateTime.now().day).toString())) {
                   Map<String, dynamic> docs =
-                      snapshot.data!.get(DateTime.now().day.toString());
+                      snapshot.data!.get((DateTime.now().day).toString());
 
-                  // skbsvkdsbvds
+                  // skbsvkdsbvds///form here
+                  Map<String, dynamic> documentData =
+                      snapshot.data!.data() as Map<String, dynamic>;
+                  List<dynamic> filteredKeys = documentData.keys.toList();
+                  filteredKeys
+                      .sort((a, b) => int.parse(a).compareTo(int.parse(b)));
+
+                  // print(filteredKeys);
+                  List<dynamic> dataForGraph = [];
+
+                  if (filteredKeys.length >= 8) {
+                    dataForGraph =
+                        filteredKeys.skip(filteredKeys.length - 7).toList();
+                  }
+                  List<int> caloriesBurnt = [];
+
+                  for (var p in dataForGraph) {
+                    if (documentData.containsKey(p.toString())) {
+                      Map<String, dynamic> mapping = documentData[p.toString()];
+
+                      // Iterate through the entries of the mapping
+                      for (var entry in mapping.entries) {
+                        // Check if the key is 'calories'
+                        caloriesBurnt.add(entry.value['caloriesBurnt']);
+                      }
+                    }
+                  }
+
+                  /// '[DateTime] here'
+                  ///''' ef [Widget]'''
 
                   List<String> image = [];
                   List<String> searchElements = docs.keys.toList();
@@ -213,7 +286,9 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
                                                   context,
                                                   MaterialPageRoute(
                                                       builder: (context) =>
-                                                          const WorkoutTrackerView()));
+                                                          const WorkoutTrackerView(
+                                                            from: "activity",
+                                                          )));
                                             },
                                             padding: EdgeInsets.zero,
                                             height: 30,
@@ -314,120 +389,130 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
                                   style: TextStyle(
                                       color: TColor.white, fontSize: 14),
                                 ),
-                              ),
+                              )
                             ],
                           ),
                           SizedBox(
                             height: media.width * 0.05,
                           ),
-                          Container(
-                            height: media.width * 0.5,
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 15, horizontal: 0),
-                            decoration: BoxDecoration(
-                                color: TColor.white,
-                                borderRadius: BorderRadius.circular(15),
-                                boxShadow: const [
-                                  BoxShadow(
-                                      color: Colors.black12, blurRadius: 3)
-                                ]),
-                            child: BarChart(BarChartData(
-                              barTouchData: BarTouchData(
-                                touchTooltipData: BarTouchTooltipData(
-                                  tooltipBgColor: Colors.grey,
-                                  tooltipHorizontalAlignment:
-                                      FLHorizontalAlignment.right,
-                                  tooltipMargin: 10,
-                                  getTooltipItem:
-                                      (group, groupIndex, rod, rodIndex) {
-                                    String weekDay;
-                                    switch (group.x) {
-                                      case 0:
-                                        weekDay = 'Monday';
-                                        break;
-                                      case 1:
-                                        weekDay = 'Tuesday';
-                                        break;
-                                      case 2:
-                                        weekDay = 'Wednesday';
-                                        break;
-                                      case 3:
-                                        weekDay = 'Thursday';
-                                        break;
-                                      case 4:
-                                        weekDay = 'Friday';
-                                        break;
-                                      case 5:
-                                        weekDay = 'Saturday';
-                                        break;
-                                      case 6:
-                                        weekDay = 'Sunday';
-                                        break;
-                                      default:
-                                        throw Error();
-                                    }
-                                    return BarTooltipItem(
-                                      '$weekDay\n',
-                                      const TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14,
+                          dataForGraph.isNotEmpty
+                              ? Container(
+                                  height: media.width * 0.5,
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 15, horizontal: 0),
+                                  decoration: BoxDecoration(
+                                      color: TColor.white,
+                                      borderRadius: BorderRadius.circular(15),
+                                      boxShadow: const [
+                                        BoxShadow(
+                                            color: Colors.black12,
+                                            blurRadius: 3)
+                                      ]),
+                                  child: BarChart(BarChartData(
+                                    barTouchData: BarTouchData(
+                                      touchTooltipData: BarTouchTooltipData(
+                                        tooltipBgColor: Colors.grey,
+                                        tooltipHorizontalAlignment:
+                                            FLHorizontalAlignment.right,
+                                        tooltipMargin: 10,
+                                        getTooltipItem:
+                                            (group, groupIndex, rod, rodIndex) {
+                                          String weekDay;
+                                          switch (group.x) {
+                                            case 0:
+                                              weekDay = 'Monday';
+                                              break;
+                                            case 1:
+                                              weekDay = 'Tuesday';
+                                              break;
+                                            case 2:
+                                              weekDay = 'Wednesday';
+                                              break;
+                                            case 3:
+                                              weekDay = 'Thursday';
+                                              break;
+                                            case 4:
+                                              weekDay = 'Friday';
+                                              break;
+                                            case 5:
+                                              weekDay = 'Saturday';
+                                              break;
+                                            case 6:
+                                              weekDay = 'Sunday';
+                                              break;
+                                            default:
+                                              throw Error();
+                                          }
+                                          return BarTooltipItem(
+                                            '$weekDay\n',
+                                            const TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 14,
+                                            ),
+                                            children: <TextSpan>[
+                                              TextSpan(
+                                                text: (rod.toY - 1).toString(),
+                                                style: TextStyle(
+                                                  color: TColor.white,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        },
                                       ),
-                                      children: <TextSpan>[
-                                        TextSpan(
-                                          text: (rod.toY - 1).toString(),
-                                          style: TextStyle(
-                                            color: TColor.white,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w500,
-                                          ),
+                                      touchCallback: (FlTouchEvent event,
+                                          barTouchResponse) {
+                                        setState(() {
+                                          if (!event
+                                                  .isInterestedForInteractions ||
+                                              barTouchResponse == null ||
+                                              barTouchResponse.spot == null) {
+                                            touchedIndex = -1;
+                                            return;
+                                          }
+                                          touchedIndex = barTouchResponse
+                                              .spot!.touchedBarGroupIndex;
+                                        });
+                                      },
+                                    ),
+                                    titlesData: FlTitlesData(
+                                      show: true,
+                                      rightTitles: AxisTitles(
+                                        sideTitles:
+                                            SideTitles(showTitles: false),
+                                      ),
+                                      topTitles: AxisTitles(
+                                        sideTitles:
+                                            SideTitles(showTitles: false),
+                                      ),
+                                      bottomTitles: AxisTitles(
+                                        sideTitles: SideTitles(
+                                          showTitles: true,
+                                          getTitlesWidget: getTitles,
+                                          reservedSize: 38,
                                         ),
-                                      ],
-                                    );
-                                  },
+                                      ),
+                                      leftTitles: AxisTitles(
+                                        sideTitles: SideTitles(
+                                          showTitles: false,
+                                        ),
+                                      ),
+                                    ),
+                                    borderData: FlBorderData(
+                                      show: false,
+                                    ),
+                                    barGroups:
+                                        showingGroups(value: caloriesBurnt),
+                                    gridData: FlGridData(show: false),
+                                  )),
+                                )
+                              : const Center(
+                                  child: Text(
+                                      'Not enough data to display the graph'),
                                 ),
-                                touchCallback:
-                                    (FlTouchEvent event, barTouchResponse) {
-                                  setState(() {
-                                    if (!event.isInterestedForInteractions ||
-                                        barTouchResponse == null ||
-                                        barTouchResponse.spot == null) {
-                                      touchedIndex = -1;
-                                      return;
-                                    }
-                                    touchedIndex = barTouchResponse
-                                        .spot!.touchedBarGroupIndex;
-                                  });
-                                },
-                              ),
-                              titlesData: FlTitlesData(
-                                show: true,
-                                rightTitles: AxisTitles(
-                                  sideTitles: SideTitles(showTitles: false),
-                                ),
-                                topTitles: AxisTitles(
-                                  sideTitles: SideTitles(showTitles: false),
-                                ),
-                                bottomTitles: AxisTitles(
-                                  sideTitles: SideTitles(
-                                    showTitles: true,
-                                    getTitlesWidget: getTitles,
-                                    reservedSize: 38,
-                                  ),
-                                ),
-                                leftTitles: AxisTitles(
-                                  sideTitles: SideTitles(
-                                    showTitles: false,
-                                  ),
-                                ),
-                              ),
-                              borderData: FlBorderData(
-                                show: false,
-                              ),
-                              barGroups: showingGroups(),
-                              gridData: FlGridData(show: false),
-                            )),
-                          ),
                           SizedBox(
                             height: media.width * 0.05,
                           ),
@@ -442,18 +527,19 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700),
                               ),
-                              TextButton(
-                                onPressed: () {
-                                  // TO DO function for see more
-                                },
-                                child: Text(
-                                  "See More",
-                                  style: TextStyle(
-                                      color: TColor.gray,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w700),
-                                ),
-                              )
+                              // TextButton(
+                              //   onPressed: () {
+                              //     // TO DO function for see more
+                              //     print(DateTime.now().weekday);
+                              //   },
+                              //   child: Text(
+                              //     "See More",
+                              //     style: TextStyle(
+                              //         color: TColor.gray,
+                              //         fontSize: 14,
+                              //         fontWeight: FontWeight.w700),
+                              //   ),
+                              // )
                             ],
                           ),
                           ListView.builder(
@@ -497,28 +583,29 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
       fontWeight: FontWeight.w500,
       fontSize: 12,
     );
+
     Widget text;
     switch (value.toInt()) {
       case 0:
-        text = Text('Sun', style: style);
-        break;
-      case 1:
         text = Text('Mon', style: style);
         break;
-      case 2:
+      case 1:
         text = Text('Tue', style: style);
         break;
-      case 3:
+      case 2:
         text = Text('Wed', style: style);
         break;
-      case 4:
+      case 3:
         text = Text('Thu', style: style);
         break;
-      case 5:
+      case 4:
         text = Text('Fri', style: style);
         break;
-      case 6:
+      case 5:
         text = Text('Sat', style: style);
+        break;
+      case 6:
+        text = Text('Sun', style: style);
         break;
       default:
         text = Text('', style: style);
@@ -531,29 +618,40 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
     );
   }
 
-  List<BarChartGroupData> showingGroups() => List.generate(7, (i) {
+  List<BarChartGroupData> showingGroups({required List<int> value}) =>
+      List.generate(7, (i) {
+        double maxCalories = 2000.toDouble();
+
         switch (i) {
-          // TODO: change Value here accordingly (maximum -20 Value)
+          //  change Value here accordingly (maximum -20 Value)
           case 0:
-            return makeGroupData(0, 20, TColor.primaryG,
+            return makeGroupData(
+                0, (value[0] / maxCalories) * 20.0, TColor.primaryG,
                 isTouched: i == touchedIndex);
           case 1:
-            return makeGroupData(1, 10.5, TColor.secondaryG,
+            return makeGroupData(
+                1, (value[1] / maxCalories) * 20.0, TColor.secondaryG,
                 isTouched: i == touchedIndex);
+
           case 2:
-            return makeGroupData(2, 5, TColor.primaryG,
+            return makeGroupData(
+                2, (value[2] / maxCalories) * 20.0, TColor.primaryG,
                 isTouched: i == touchedIndex);
           case 3:
-            return makeGroupData(3, 7.5, TColor.secondaryG,
+            return makeGroupData(
+                3, (value[3] / maxCalories) * 20.0, TColor.secondaryG,
                 isTouched: i == touchedIndex);
           case 4:
-            return makeGroupData(4, 15, TColor.primaryG,
+            return makeGroupData(
+                4, (value[4] / maxCalories) * 20.0, TColor.primaryG,
                 isTouched: i == touchedIndex);
           case 5:
-            return makeGroupData(5, 5.5, TColor.secondaryG,
+            return makeGroupData(
+                5, (value[5] / maxCalories) * 20.0, TColor.secondaryG,
                 isTouched: i == touchedIndex);
           case 6:
-            return makeGroupData(6, 8.5, TColor.primaryG,
+            return makeGroupData(
+                6, (value[6] / maxCalories) * 20.0, TColor.primaryG,
                 isTouched: i == touchedIndex);
           default:
             return throw Error();

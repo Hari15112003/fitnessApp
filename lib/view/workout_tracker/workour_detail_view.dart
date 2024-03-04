@@ -1,14 +1,19 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitness/common/colo_extension.dart';
 import 'package:fitness/common_widget/exercises_row.dart';
 import 'package:fitness/common_widget/icon_title_next_row.dart';
+import 'package:fitness/provider/firebase/auth_provider.dart';
 import 'package:fitness/view/workout_tracker/exercises_stpe_details.dart';
 import 'package:fitness/view/workout_tracker/workout_schedule_view.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class WorkoutDetailView extends StatefulWidget {
   final Map dObj;
   final String forWhat;
   final int indexingRef;
+  final String imagePath;
 
   final String workOutName;
   const WorkoutDetailView({
@@ -17,6 +22,7 @@ class WorkoutDetailView extends StatefulWidget {
     required this.workOutName,
     required this.forWhat,
     required this.indexingRef,
+    required this.imagePath,
   });
 
   @override
@@ -24,69 +30,159 @@ class WorkoutDetailView extends StatefulWidget {
 }
 
 class _WorkoutDetailViewState extends State<WorkoutDetailView> {
-  List latestArr = [
-    {
-      "image": "assets/img/Workout1.png",
-      "title": "Fullbody Workout",
-      "time": "Today, 03:00pm"
-    },
-    {
-      "image": "assets/img/Workout2.png",
-      "title": "Upperbody Workout",
-      "time": "June 05, 02:00pm"
-    },
-  ];
+  // List latestArr = [
+  //   {
+  //     "image": "assets/img/Workout2.png",
+  //     "title": "Fullbody Workout",
+  //     "time": "Today, 03:00pm"
+  //   },
+  //   {
+  //     "image": "assets/img/Workout2.png",
+  //     "title": "Upperbody Workout",
+  //     "time": "June 05, 02:00pm"
+  //   },
+  // ];
 
   // needed array
 
-  List youArr = [
-    {"image": "assets/img/barbell.png", "title": "Barbell"},
-    {"image": "assets/img/skipping_rope.png", "title": "Skipping Rope"},
-    {"image": "assets/img/bottle.png", "title": "Bottle 1 Liters"},
+  List<dynamic> neededThingsArray = [
+    // 0-full body
+    [
+      {"image": "assets/img/barbell.png", "title": "Barbell"},
+      {"image": "assets/photos/dumbbells.png", "title": "Dumbbells"},
+      {"image": "assets/photos/bench.png", "title": "Bench"},
+      {"image": "assets/img/bottle.png", "title": "Bottle 1 Liters"},
+    ],
+    // 1-upper
+    [
+      {"image": "assets/photos/dumbbells.png", "title": "Dumbbells"},
+      {"image": "assets/photos/pullup.png", "title": "Pull-up Bar"},
+      {"image": "assets/photos/bench.png", "title": "Bench"},
+      {"image": "assets/img/barbell.png", "title": "Barbell"},
+      {"image": "assets/img/bottle.png", "title": "Bottle 1 Liters"},
+    ],
+    // 2 -lower
+    [
+      {"image": "assets/img/barbell.png", "title": "Barbell"},
+      {"image": "assets/photos/dumbbells.png", "title": "Dumbbells"},
+      {"image": "assets/photos/kettle.png", "title": "Kettlebell"},
+      {"image": "assets/img/bottle.png", "title": "Bottle 1 Liters"},
+    ],
+    // 3 -abs
+    [
+      {"image": "assets/photos/bosu.png", "title": "Bosu Ball"},
+      {"image": "assets/photos/mat.png", "title": "Exercise Mat"},
+      {"image": "assets/img/bottle.png", "title": "Bottle 1 Liters"},
+    ],
+    // 4 -leg
+    [
+      {"image": "assets/img/barbell.png", "title": "Barbell"},
+      {"image": "assets/photos/dumbbells.png", "title": "Dumbbells"},
+      {"image": "assets/photos/legpress.png", "title": "Leg Press Machine"},
+      {"image": "assets/img/bottle.png", "title": "Bottle 1 Liters"},
+    ],
+// 5-  chest
+    [
+      {"image": "assets/img/barbell.png", "title": "Barbell"},
+      {"image": "assets/photos/bench.png", "title": "Bench"},
+      {"image": "assets/photos/dumbbells.png", "title": "Dumbbells"},
+      {"image": "assets/photos/medicine.png", "title": "Medicine Ball"},
+      {"image": "assets/img/bottle.png", "title": "Bottle 1 Liters"},
+    ],
+// 6- shoulder
+    [
+      {"image": "assets/img/barbell.png", "title": "Barbell"},
+      {"image": "assets/photos/dumbbells.png", "title": "Dumbbells"},
+      {"image": "assets/photos/medicine.png", "title": "Medicine Ball"},
+      {"image": "assets/img/bottle.png", "title": "Bottle 1 Liters"},
+    ],
+// 7-arm
+    [
+      {"image": "assets/img/barbell.png", "title": "Barbell"},
+      {"image": "assets/photos/dumbbells.png", "title": "Dumbbells"},
+      {
+        "image": "assets/photos/resistanceband.png",
+        "title": "Resistance Bands"
+      },
+      {"image": "assets/img/bottle.png", "title": "Bottle 1 Liters"},
+    ],
+// 8 -back
+    [
+      {"image": "assets/img/barbell.png", "title": "Barbell"},
+      {"image": "assets/photos/dumbbells.png", "title": "Dumbbells"},
+      {
+        "image": "assets/photos/resistanceband.png",
+        "title": "Resistance Bands"
+      },
+      {"image": "assets/img/bottle.png", "title": "Bottle 1 Liters"},
+    ],
+// 9 -plyom
+    [
+      {"image": "assets/img/skipping_rope.png", "title": "Jump Rope"},
+      {"image": "assets/photos/medicine.png", "title": "Medicine Ball"},
+      {"image": "assets/photos/bench.png", "title": "Bench"},
+      {"image": "assets/img/bottle.png", "title": "Bottle 1 Liters"},
+    ],
   ];
   List exercisesArr = [
     {
       "name": "FullBody WorkOut",
       "set": [
-        {"image": "assets/img/img_1.png", "title": "Squats", "value": "05:00"},
-        {"image": "assets/img/img_1.png", "title": "Deadlifts", "value": "15x"},
         {
-          "image": "assets/img/img_2.png",
-          "title": "Bench Press",
+          "image": "assets/fullbody/squats.png",
+          "title": "Squats",
+          "value": "05:00"
+        },
+        {
+          "image": "assets/fullbody/deadlifts.png",
+          "title": "Deadlifts",
+          "value": "15x"
+        },
+        {
+          "image": "assets/fullbody/benchpress.png",
+          "title": "Benchpress",
           "value": "20x"
         },
         {
-          "image": "assets/img/img_1.png",
-          "title": "Pull-ups",
+          "image": "assets/fullbody/pullups.png",
+          "title": "Pull ups",
           "value": "00:53"
         },
         {
-          "image": "assets/img/img_2.png",
-          "title": "Overhead Press",
+          "image": "assets/fullbody/overhead.png",
+          "title": "Overhead",
           "value": "02:00"
         },
         {"image": "assets/img/img_2.png", "title": "Lunges", "value": "02:00"},
-        {"image": "assets/img/img_2.png", "title": "Planks", "value": "02:00"},
         {
-          "image": "assets/img/img_2.png",
+          "image": "assets/fullbody/planks.png",
+          "title": "Planks",
+          "value": "20x"
+        },
+        {
+          "image": "assets/fullbody/russian.png",
           "title": "Russian Twists",
-          "value": "02:00"
+          "value": "30x"
         },
         {
-          "image": "assets/img/img_2.png",
+          "image": "assets/fullbody/kettle.png",
           "title": "Kettlebell Swings",
-          "value": "02:00"
+          "value": "20x"
         },
-        {"image": "assets/img/img_2.png", "title": "Burpees", "value": "02:00"},
         {
-          "image": "assets/img/img_2.png",
+          "image": "assets/fullbody/buepess.png",
+          "title": "Burpees",
+          "value": "20x"
+        },
+        {
+          "image": "assets/fullbody/boxjumps.png",
           "title": "Box Jumps",
-          "value": "02:00"
+          "value": "20x"
         },
         {
-          "image": "assets/img/img_2.png",
+          "image": "assets/fullbody/medicine.png",
           "title": "Medicine Ball Slams",
-          "value": "02:00"
+          "value": "20x"
         },
       ],
     },
@@ -95,64 +191,64 @@ class _WorkoutDetailViewState extends State<WorkoutDetailView> {
       "name": "UpperBody WorkOut",
       "set": [
         {
-          "image": "assets/img/img_2.png",
+          "image": "assets/fullbody/squats.png",
           "title": "Push-ups",
-          "value": "02:00"
+          "value": "20x"
         },
         {
-          "image": "assets/img/img_2.png",
+          "image": "assets/fullbody/pullups.png",
           "title": "Pull-ups",
-          "value": "02:00"
+          "value": "18x"
         },
         {
-          "image": "assets/img/img_2.png",
+          "image": "assets/fullbody/overhead.png",
           "title": "Overhead Press",
-          "value": "02:00"
+          "value": "20x"
         },
         {
-          "image": "assets/img/img_2.png",
+          "image": "assets/fullbody/benchpress.png",
           "title": "Bench Press",
-          "value": "02:00"
+          "value": "22x"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Dumbbell Flyes",
-          "value": "02:00"
+          "value": "20x"
         },
         {
-          "image": "assets/img/img_2.png",
+          "image": "assets/fullbody/buepess.png",
           "title": "Lat Pulldowns",
-          "value": "02:00"
+          "value": "20x"
         },
         {
-          "image": "assets/img/img_2.png",
+          "image": "assets/fullbody/boxjumps.png",
           "title": "Bent Over Rows",
-          "value": "02:00"
+          "value": "25x"
         },
         {
-          "image": "assets/img/img_2.png",
+          "image": "assets/fullbody/medicine.png",
           "title": "Bicep Curls",
-          "value": "02:00"
+          "value": "20x"
         },
         {
-          "image": "assets/img/img_2.png",
+          "image": "assets/fullbody/kettle.png",
           "title": "Tricep Dips",
-          "value": "02:00"
+          "value": "20x"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Hammer Curls",
-          "value": "02:00"
+          "value": "21x"
         },
         {
-          "image": "assets/img/img_2.png",
+          "image": "assets/fullbody/planks.png",
           "title": "Lateral Raises",
-          "value": "02:00"
+          "value": "20x"
         },
         {
-          "image": "assets/img/img_2.png",
+          "image": "assets/fullbody/deadlifts.png",
           "title": "Front Raises",
-          "value": "02:00"
+          "value": "20x"
         },
       ]
     },
@@ -161,51 +257,35 @@ class _WorkoutDetailViewState extends State<WorkoutDetailView> {
       "name": "LowerBody WorkOut",
       "set": [
         {"image": "assets/img/img_2.png", "title": "Squats", "value": "02:00"},
-        {
-          "image": "assets/img/img_2.png",
-          "title": "Deadlifts",
-          "value": "02:00"
-        },
-        {"image": "assets/img/img_2.png", "title": "Lunges", "value": "02:00"},
-        {
-          "image": "assets/img/img_2.png",
-          "title": "Leg Press",
-          "value": "02:00"
-        },
-        {
-          "image": "assets/img/img_2.png",
-          "title": "Leg Curls",
-          "value": "02:00"
-        },
+        {"image": "assets/img/img_2.png", "title": "Deadlifts", "value": "29x"},
+        {"image": "assets/img/img_2.png", "title": "Lunges", "value": "29x"},
+        {"image": "assets/img/img_2.png", "title": "Leg Press", "value": "29x"},
+        {"image": "assets/img/img_2.png", "title": "Leg Curls", "value": "29x"},
         {
           "image": "assets/img/img_2.png",
           "title": "Bodyweight Squats",
-          "value": "02:00"
+          "value": "29x"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Bulgarian Split Squats",
-          "value": "02:00"
+          "value": "29x"
         },
-        {
-          "image": "assets/img/img_2.png",
-          "title": "Box Jumps",
-          "value": "02:00"
-        },
+        {"image": "assets/img/img_2.png", "title": "Box Jumps", "value": "29x"},
         {
           "image": "assets/img/img_2.png",
           "title": "Calf Raises",
-          "value": "02:00"
+          "value": "15x"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Glute Bridges",
-          "value": "02:00"
+          "value": "15x"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Side Lunges",
-          "value": "02:00"
+          "value": "15x"
         },
         {
           "image": "assets/img/img_2.png",
@@ -218,12 +298,8 @@ class _WorkoutDetailViewState extends State<WorkoutDetailView> {
     {
       "name": "Abs WorkOut",
       "set": [
-        {
-          "image": "assets/img/img_2.png",
-          "title": "Crunches",
-          "value": "02:00"
-        },
-        {"image": "assets/img/img_2.png", "title": "Planks", "value": "02:00"},
+        {"image": "assets/img/img_2.png", "title": "Crunches", "value": "18x"},
+        {"image": "assets/img/img_2.png", "title": "Planks", "value": "18x"},
         {
           "image": "assets/img/img_2.png",
           "title": "Russian Twists",
@@ -232,47 +308,47 @@ class _WorkoutDetailViewState extends State<WorkoutDetailView> {
         {
           "image": "assets/img/img_2.png",
           "title": "Bicycle Crunches",
-          "value": "02:00"
+          "value": "17x"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Hanging Leg Raises",
-          "value": "02:00"
+          "value": "17x"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Ab Rollouts",
-          "value": "02:00"
+          "value": "17x"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Mountain Climbers",
-          "value": "02:00"
+          "value": "12x"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Reverse Crunches",
-          "value": "02:00"
+          "value": "12x"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Woodchoppers",
-          "value": "02:00"
+          "value": "12x"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Flutter Kicks",
-          "value": "02:00"
+          "value": "13x"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Side Planks",
-          "value": "02:00"
+          "value": "13x"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Toe Touches",
-          "value": "02:00"
+          "value": "13x"
         },
       ]
     },
@@ -280,57 +356,37 @@ class _WorkoutDetailViewState extends State<WorkoutDetailView> {
     {
       "name": "Leg WorkOut",
       "set": [
-        {"image": "assets/img/img_2.png", "title": "Squats", "value": "02:00"},
+        {"image": "assets/img/img_2.png", "title": "Squats", "value": "13x"},
         {"image": "assets/img/img_2.png", "title": "Lunges", "value": "02:00"},
-        {
-          "image": "assets/img/img_2.png",
-          "title": "Leg Press",
-          "value": "02:00"
-        },
-        {
-          "image": "assets/img/img_2.png",
-          "title": "Leg Curls",
-          "value": "02:00"
-        },
+        {"image": "assets/img/img_2.png", "title": "Leg Press", "value": "16x"},
+        {"image": "assets/img/img_2.png", "title": "Leg Curls", "value": "16x"},
         {
           "image": "assets/img/img_2.png",
           "title": "Bulgarian Split Squats",
-          "value": "02:00"
+          "value": "16x"
         },
-        {
-          "image": "assets/img/img_2.png",
-          "title": "Box Jumps",
-          "value": "02:00"
-        },
+        {"image": "assets/img/img_2.png", "title": "Box Jumps", "value": "16x"},
         {
           "image": "assets/img/img_2.png",
           "title": "Calf Raises",
-          "value": "02:00"
+          "value": "16x"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Glute Bridges",
-          "value": "02:00"
+          "value": "14x"
         },
-        {
-          "image": "assets/img/img_2.png",
-          "title": "Step-Ups",
-          "value": "02:00"
-        },
-        {
-          "image": "assets/img/img_2.png",
-          "title": "Deadlifts",
-          "value": "02:00"
-        },
+        {"image": "assets/img/img_2.png", "title": "Step-Ups", "value": "14x"},
+        {"image": "assets/img/img_2.png", "title": "Deadlifts", "value": "14x"},
         {
           "image": "assets/img/img_2.png",
           "title": "Side Lunges",
-          "value": "02:00"
+          "value": "14x"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Sumo Squats",
-          "value": "02:00"
+          "value": "19x"
         },
       ],
     },
@@ -341,17 +397,13 @@ class _WorkoutDetailViewState extends State<WorkoutDetailView> {
         {
           "image": "assets/img/img_2.png",
           "title": "Bench Press",
-          "value": "02:00"
+          "value": "19x"
         },
-        {
-          "image": "assets/img/img_2.png",
-          "title": "Push-ups",
-          "value": "02:00"
-        },
+        {"image": "assets/img/img_2.png", "title": "Push-ups", "value": "19x"},
         {
           "image": "assets/img/img_2.png",
           "title": "Dumbbell Flyes",
-          "value": "02:00"
+          "value": "19x"
         },
         {
           "image": "assets/img/img_2.png",
@@ -361,22 +413,22 @@ class _WorkoutDetailViewState extends State<WorkoutDetailView> {
         {
           "image": "assets/img/img_2.png",
           "title": "Incline Bench Press",
-          "value": "02:00"
+          "value": "02:20"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Chest Dips",
-          "value": "02:00"
+          "value": "02:20"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Chest Press Machine",
-          "value": "02:00"
+          "value": "02:20"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Pec Deck Machine",
-          "value": "02:00"
+          "value": "02:20"
         },
         {
           "image": "assets/img/img_2.png",
@@ -391,12 +443,12 @@ class _WorkoutDetailViewState extends State<WorkoutDetailView> {
         {
           "image": "assets/img/img_2.png",
           "title": "Decline Bench Press",
-          "value": "02:00"
+          "value": "04:00"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Squeeze Press",
-          "value": "02:00"
+          "value": "04:00"
         },
       ],
     },
@@ -407,19 +459,19 @@ class _WorkoutDetailViewState extends State<WorkoutDetailView> {
         {
           "image": "assets/img/img_2.png",
           "title": "Overhead Press",
-          "value": "02:00"
+          "value": "04:00"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Lateral Raises",
-          "value": "02:00"
+          "value": "04:00"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Front Raises",
-          "value": "02:00"
+          "value": "04:00"
         },
-        {"image": "assets/img/img_2.png", "title": "Shrugs", "value": "02:00"},
+        {"image": "assets/img/img_2.png", "title": "Shrugs", "value": "04:00"},
         {
           "image": "assets/img/img_2.png",
           "title": "Upright Rows",
@@ -433,32 +485,32 @@ class _WorkoutDetailViewState extends State<WorkoutDetailView> {
         {
           "image": "assets/img/img_2.png",
           "title": "Reverse Flyes",
-          "value": "02:00"
+          "value": "09:00"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Seated Dumbbell Press",
-          "value": "02:00"
+          "value": "09:00"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Arnold Press",
-          "value": "02:00"
+          "value": "09:00"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Lateral Dumbbell Raises",
-          "value": "02:00"
+          "value": "09:00"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Barbell Shoulder Press",
-          "value": "02:00"
+          "value": "09:00"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Cuban Press",
-          "value": "02:00"
+          "value": "09:00"
         },
       ]
     },
@@ -469,62 +521,62 @@ class _WorkoutDetailViewState extends State<WorkoutDetailView> {
         {
           "image": "assets/img/img_2.png",
           "title": "Bicep Curls",
-          "value": "02:00"
+          "value": "09:00"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Tricep Dips",
-          "value": "02:00"
+          "value": "09:00"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Hammer Curls",
-          "value": "02:00"
+          "value": "17x"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Skull Crushers",
-          "value": "02:00"
+          "value": "17x"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Preacher Curls",
-          "value": "02:00"
+          "value": "17x"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Tricep Kickbacks",
-          "value": "02:00"
+          "value": "17x"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Concentration Curls",
-          "value": "02:00"
+          "value": "17x"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Diamond Push-ups",
-          "value": "02:00"
+          "value": "17x"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Barbell Curl",
-          "value": "02:00"
+          "value": "05:00"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Overhead Tricep Extension",
-          "value": "02:00"
+          "value": "05:00"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Cable Hammer Curls",
-          "value": "02:00"
+          "value": "05:00"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Close Grip Bench Press",
-          "value": "02:00"
+          "value": "05:00"
         },
       ]
     },
@@ -536,17 +588,17 @@ class _WorkoutDetailViewState extends State<WorkoutDetailView> {
         {
           "image": "assets/img/img_2.png",
           "title": "Lat Pulldowns",
-          "value": "02:00"
+          "value": "05:00"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Bent Over Rows",
-          "value": "02:00"
+          "value": "05:00"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "T-Bar Rows",
-          "value": "02:00"
+          "value": "05:00"
         },
         {
           "image": "assets/img/img_2.png",
@@ -556,42 +608,42 @@ class _WorkoutDetailViewState extends State<WorkoutDetailView> {
         {
           "image": "assets/img/img_2.png",
           "title": "Deadlifts",
-          "value": "02:00"
+          "value": "06:20"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Face Pulls",
-          "value": "02:00"
+          "value": "06:20"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Cable Rows",
-          "value": "02:00"
+          "value": "06:20"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Single-Arm Dumbbell Rows",
-          "value": "02:00"
+          "value": "06:20"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Seated Cable Rows",
-          "value": "02:00"
+          "value": "06:20"
         },
         {
           "image": "assets/img/img_2.png",
           "title": "Hyperextensions",
-          "value": "02:00"
+          "value": "06:20"
         },
         {
           "image": "assets/img/img_2.png",
           "title": 'Reverse Flyes',
-          "value": "02:00"
+          "value": "06:20"
         },
         {
           "image": "assets/img/img_2.png",
           "title": 'Deadlift Variations',
-          "value": "02:00"
+          "value": "06:20"
         },
       ]
     },
@@ -679,7 +731,7 @@ class _WorkoutDetailViewState extends State<WorkoutDetailView> {
   //       {
   //         "image": "assets/img/img_2.png",
   //         "title": "Rest and Drink",
-  //         "value": "02:00"
+  //         "value": "06:20"
   //       },
   //     ],
   //   },
@@ -709,10 +761,11 @@ class _WorkoutDetailViewState extends State<WorkoutDetailView> {
   // ];
   final String workOutScheduled = "Fullbody Workout";
   bool isfavorite = false;
+  final collectionRef = FirebaseFirestore.instance.collection("users");
   @override
   Widget build(BuildContext context) {
     var media = MediaQuery.of(context).size;
-
+    final ap = Provider.of<MyAuthProvider>(context, listen: false);
     return Container(
       decoration:
           BoxDecoration(gradient: LinearGradient(colors: TColor.primaryG)),
@@ -774,7 +827,8 @@ class _WorkoutDetailViewState extends State<WorkoutDetailView> {
               flexibleSpace: Align(
                 alignment: Alignment.center,
                 child: Image.asset(
-                  "assets/img/detail_top.png",
+                  widget.imagePath,
+                  // "assets/img/detail_top.png",
                   width: media.width * 0.75,
                   height: media.width * 0.8,
                   fit: BoxFit.contain,
@@ -783,10 +837,43 @@ class _WorkoutDetailViewState extends State<WorkoutDetailView> {
             ),
           ];
         },
-        body: StreamBuilder<Object>(
+        body: StreamBuilder<DocumentSnapshot>(
             // to implement stream builder
-            stream: null,
+            stream: collectionRef
+                .doc(FirebaseAuth.instance.currentUser!.uid)
+                .collection("workout")
+                .doc(DateTime.now().month.toString())
+                .snapshots(),
             builder: (context, snapshot) {
+              // cjw
+              if (snapshot.hasData) {
+                if (snapshot.data != null) {
+                  Map<String, dynamic>? prin =
+                      snapshot.data?.data() as Map<String, dynamic>?;
+
+                  if (prin != null &&
+                      prin.containsKey((DateTime.now().day).toString())) {
+                    Map<String, dynamic> docs =
+                        snapshot.data!.get(DateTime.now().day.toString());
+                    List<String> searchElements = docs.keys.toList();
+
+                    if (searchElements.contains(widget.workOutName)) {
+                      var somethingLike = (docs[widget.workOutName]['like']);
+                      if (somethingLike != null) {
+                        isfavorite = somethingLike as bool;
+                      }
+                    }
+                  } else {
+                    isfavorite = false;
+                  }
+                } else {
+                  isfavorite = false;
+                }
+              } else {
+                isfavorite = false;
+              }
+
+              // :d'
               return Container(
                 padding: const EdgeInsets.symmetric(horizontal: 15),
                 decoration: BoxDecoration(
@@ -830,28 +917,42 @@ class _WorkoutDetailViewState extends State<WorkoutDetailView> {
                                             fontWeight: FontWeight.w700),
                                       ),
                                       Text(
-                                        "${widget.dObj["exercises"].toString()} | ${widget.dObj["time"].toString()} | 320 Calories Burn",
+                                        "12 Exericses | Today | 320 Calories Burn",
                                         style: TextStyle(
                                             color: TColor.gray, fontSize: 12),
                                       ),
                                     ],
                                   ),
                                 ),
-                                TextButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      isfavorite = !isfavorite;
-                                    });
-                                  },
-                                  child: Image.asset(
-                                    isfavorite
-                                        ? "assets/img/fav.png"
-                                        : "assets/img/fav.png",
-                                    width: 15,
-                                    height: 15,
-                                    fit: BoxFit.contain,
-                                  ),
-                                )
+                                widget.forWhat == 'view'
+                                    ? const SizedBox()
+                                    : TextButton(
+                                        onPressed: () async {
+                                          await ap.updatelikeStatusFireBase(
+                                              context: context,
+                                              like: !isfavorite,
+                                              workOutName: widget.workOutName);
+                                          setState(() {
+                                            isfavorite = !isfavorite;
+                                          });
+                                        },
+                                        child: Icon(
+                                          isfavorite == true
+                                              ? Icons.favorite
+                                              : Icons.favorite_border,
+                                          color: isfavorite == true
+                                              ? Colors.red
+                                              : Colors.grey,
+                                        ),
+                                        // child: Image.asset(
+                                        //   isfavorite
+                                        //       ? "assets/img/fav.png"
+                                        //       : "assets/img/fav.png",
+                                        //   width: 15,
+                                        //   height: 15,
+                                        //   fit: BoxFit.contain,
+                                        // ),
+                                      )
                               ],
                             ),
                             SizedBox(
@@ -861,7 +962,7 @@ class _WorkoutDetailViewState extends State<WorkoutDetailView> {
                                 ? IconTitleNextRow(
                                     icon: "assets/img/time.png",
                                     title: "Schedule Workout",
-                                    time: "5/27, 09:00 AM",
+                                    time: "",
                                     color:
                                         TColor.primaryColor2.withOpacity(0.3),
                                     onPressed: () {
@@ -902,7 +1003,7 @@ class _WorkoutDetailViewState extends State<WorkoutDetailView> {
                                 TextButton(
                                   onPressed: () {},
                                   child: Text(
-                                    "${youArr.length} Items",
+                                    "${neededThingsArray[widget.indexingRef].length} Items",
                                     style: TextStyle(
                                         color: TColor.gray, fontSize: 12),
                                   ),
@@ -915,9 +1016,14 @@ class _WorkoutDetailViewState extends State<WorkoutDetailView> {
                                   padding: EdgeInsets.zero,
                                   scrollDirection: Axis.horizontal,
                                   shrinkWrap: true,
-                                  itemCount: youArr.length,
+                                  itemCount:
+                                      neededThingsArray[widget.indexingRef]
+                                          .length,
                                   itemBuilder: (context, index) {
-                                    var yObj = youArr[index] as Map? ?? {};
+                                    var yObj =
+                                        neededThingsArray[widget.indexingRef]
+                                                [index] as Map? ??
+                                            {};
                                     return Container(
                                         margin: const EdgeInsets.all(8),
                                         child: Column(
@@ -970,7 +1076,7 @@ class _WorkoutDetailViewState extends State<WorkoutDetailView> {
                                 TextButton(
                                   onPressed: () {},
                                   child: Text(
-                                    "${exercisesArr[widget.indexingRef].length} Exercises",
+                                    "${exercisesArr[widget.indexingRef]['set'].length} Exercises",
                                     style: TextStyle(
                                         color: TColor.gray, fontSize: 12),
                                   ),
@@ -996,6 +1102,8 @@ class _WorkoutDetailViewState extends State<WorkoutDetailView> {
                                         MaterialPageRoute(
                                           builder: (context) =>
                                               ExercisesStepDetails(
+                                            whatFor: widget.forWhat,
+                                            workoutName: widget.workOutName,
                                             workoutIndex: widget.indexingRef,
                                             exerciseIndex: index,
                                             eObj: sObj,

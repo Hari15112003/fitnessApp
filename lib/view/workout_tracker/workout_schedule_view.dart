@@ -7,7 +7,6 @@ import 'package:provider/provider.dart';
 
 import '../../common/colo_extension.dart';
 import '../../common/common.dart';
-import '../../common_widget/round_button.dart';
 import 'add_schedule_view.dart';
 
 class WorkoutScheduleView extends StatefulWidget {
@@ -68,7 +67,7 @@ class _WorkoutScheduleViewState extends State<WorkoutScheduleView> {
   ];
 
   List selectDayEventArr = [];
-  List<String> timeScheduled = [];
+  // List<String> timeScheduled = [];
 
   @override
   void initState() {
@@ -140,12 +139,12 @@ class _WorkoutScheduleViewState extends State<WorkoutScheduleView> {
               .doc(_selectedDateAppBBar.month.toString())
               .snapshots(),
           builder: (context, snapshot) {
-            List<String> image = [];
 
             List<int> caloriesBurntList = [];
             List<bool> likeList = [];
             List<bool> targetCompletion = [];
             List<String> nameList = [];
+
             List<dynamic> timefromDB = [];
 
             if (snapshot.hasData) {
@@ -160,7 +159,6 @@ class _WorkoutScheduleViewState extends State<WorkoutScheduleView> {
                       snapshot.data!.get(_selectedDateAppBBar.day.toString());
 
                   List sdata = docs.entries.toList();
-                  List<String> searchElements = docs.keys.toList();
 
                   for (MapEntry<String, dynamic> entry in sdata) {
                     Map<String, dynamic> workoutData = entry.value;
@@ -178,7 +176,6 @@ class _WorkoutScheduleViewState extends State<WorkoutScheduleView> {
                     nameList.add(name);
                     timefromDB.add(timings.toList());
                     targetCompletion.add(complete);
-
                   }
                 } else {
                   // return const SizedBox();
@@ -258,6 +255,14 @@ class _WorkoutScheduleViewState extends State<WorkoutScheduleView> {
                     ),
                   ),
                   nameList.isNotEmpty
+                      ? const Padding(
+                          padding: EdgeInsets.only(left: 17),
+                          child: Text(
+                            "Swipe to delete the workout",
+                          ),
+                        )
+                      : const SizedBox(),
+                  nameList.isNotEmpty
                       ? Expanded(
                           child: SingleChildScrollView(
                             scrollDirection: Axis.vertical,
@@ -270,31 +275,22 @@ class _WorkoutScheduleViewState extends State<WorkoutScheduleView> {
                                 itemCount: nameList.length,
                                 itemBuilder: (context, index) {
                                   // var wObj = whatArr[index] as Map? ?? {};
-                                  return Dismissible(
-                                    // TODO: dismissble actions
-                                    key: Key(nameList.toString()),
-                                    onDismissed: (value) {
-                                      // Remove the item from the data source.
-                                      setState(() {
-                                        nameList.remove(nameList[index]);
-                                        // TODO: functions with firebase to remove the data
-                                      });
-
-                                      // Then show a snackbar.
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                              'The ${nameList[index]} has been Unscheduled'),
-                                        ),
-                                      );
-                                    },
-                                    // Show a red background as the item is swiped away.
-                                    background: Container(
-                                        color: Colors.red,
-                                        child: const Icon(Icons.delete)),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
+                                  return Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Dismissible(
+                                      key: Key(nameList[index].toString()),
+                                      onDismissed: (value) {
+                                        // print(nameList[index]);
+                                        ap.deleteWorkoutFromFireBase(
+                                            context: context,
+                                            workOutName: nameList[index],
+                                            month: _selectedDateAppBBar.month
+                                                .toString(),
+                                            day: _selectedDateAppBBar.day
+                                                .toString());
+                                      },
+                                      background: const Icon(Icons.delete),
+                                      secondaryBackground: const Icon(Icons.delete),
                                       child: Container(
                                           margin: const EdgeInsets.symmetric(
                                               vertical: 8, horizontal: 2),
@@ -631,7 +627,7 @@ class _WorkoutScheduleViewState extends State<WorkoutScheduleView> {
                           child: Text("No Schedule has been made yet"),
                         ),
                   const SizedBox(
-                    height: 20,
+                    height: 200,
                   )
                 ],
               );
@@ -639,29 +635,9 @@ class _WorkoutScheduleViewState extends State<WorkoutScheduleView> {
               return const SizedBox();
             }
           }),
-      bottomSheet: SizedBox(
-          width: 200,
-          child: RoundButton(
-              title: "Schedule it",
-              onPressed: () {
-                // if (_selectedDateAppBBar.toString().isNotEmpty) {
-                //   ap.addWorkOutToFireBase(
-                //       month: _selectedDateAppBBar.month.toString(),
-                //       day: _selectedDateAppBBar.day.toString(),
-                //       like: widget.like,
-                //       name: widget.workOutName,
-                //       difficultyLevel: "",
-                //       times: timeScheduled,
-                //       context: context);
-                // } else {
-                //   showSnackBar(
-                //       context: context,
-                //       content: "Please choose the perfect month");
-                // }
-              })),
       floatingActionButton: InkWell(
         onTap: () {
-          var results = Navigator.push(
+          Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) => AddScheduleView(
@@ -671,11 +647,6 @@ class _WorkoutScheduleViewState extends State<WorkoutScheduleView> {
                         month: _selectedDateAppBBar.month.toString(),
                         date: _selectedDateAppBBar,
                       )));
-          results.then((value) {
-            if (value[0].toString().isNotEmpty) {
-              timeScheduled.add(value[0].toString());
-            }
-          });
         },
         child: Container(
           width: 55,

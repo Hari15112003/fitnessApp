@@ -85,7 +85,9 @@ class _MainTabViewState extends State<MainTabView> {
                   isActive: selectTab == 1,
                   onTap: () {
                     selectTab = 1;
-                    currentTab = const WorkoutTrackerView();
+                    currentTab = const WorkoutTrackerView(
+                      from: "nav",
+                    );
                     if (mounted) {
                       setState(() {});
                     }

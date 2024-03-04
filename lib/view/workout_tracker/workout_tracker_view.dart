@@ -9,7 +9,8 @@ import '../../common_widget/upcoming_workout_row.dart';
 import '../../common_widget/what_train_row.dart';
 
 class WorkoutTrackerView extends StatefulWidget {
-  const WorkoutTrackerView({super.key});
+  final String from;
+  const WorkoutTrackerView({super.key, required this.from});
 
   @override
   State<WorkoutTrackerView> createState() => _WorkoutTrackerViewState();
@@ -33,76 +34,77 @@ class _WorkoutTrackerViewState extends State<WorkoutTrackerView> {
   List workOutArr = [
     // 1
     {
-      "image": "assets/img/what_1.png",
+      "image": "assets/photos/fullbody.png",
       "title": "Fullbody Workout",
-      "exercises": "11 Exercises",
+      "exercises": "12 Exercises",
       "time": "32mins"
     },
     // 2
     {
-      "image": "assets/img/what_2.png",
+      "image": "assets/photos/upperbody.png",
       "title": "Upperbody Workout",
       "exercises": "12 Exercises",
-      "time": "40mins"
+      "time": "30mins"
     },
     // 3
     {
-      "image": "assets/img/what_3.png",
+      "image": "assets/photos/lowerbody.png",
       "title": "Lowerbody Workout",
-      "exercises": "14 Exercises",
-      "time": "20mins"
+      "exercises": "12 Exercises",
+      "time": "32mins"
     },
     //4
     {
-      "image": "assets/img/what_3.png",
+      "image": "assets/photos/abs.png",
       "title": "ABS Workout",
-      "exercises": "14 Exercises",
+      "exercises": "12 Exercises",
       "time": "20mins"
     },
 // 5
     {
-      "image": "assets/img/what_3.png",
+      "image": "assets/photos/leg.png",
       "title": "Leg Workout",
-      "exercises": "14 Exercises",
-      "time": "20mins"
+      "exercises": "12 Exercises",
+      "time": "24mins"
     },
 //  6
     {
-      "image": "assets/img/what_3.png",
+      "image": "assets/photos/chest.png",
       "title": "Chest Workout",
-      "exercises": "14 Exercises",
-      "time": "20mins"
+      "exercises": "12 Exercises",
+      "time": "32mins"
     },
 //  7
     {
-      "image": "assets/img/what_3.png",
+      "image": "assets/photos/shoulder.png",
       "title": "Shoulder Workout",
-      "exercises": "14 Exercises",
-      "time": "20mins"
+      "exercises": "12 Exercises",
+      "time": "27mins"
     },
 //  8
     {
-      "image": "assets/img/what_3.png",
+      "image": "assets/photos/arm.png",
       "title": "Arm Workout",
-      "exercises": "14 Exercises",
-      "time": "20mins"
+      "exercises": "12 Exercises",
+      "time": "30mins"
     },
 //  9
     {
-      "image": "assets/img/what_3.png",
+      "image": "assets/photos/back.png",
       "title": "Back Workout",
-      "exercises": "14 Exercises",
-      "time": "20mins"
+      "exercises": "12 Exercises",
+      "time": "14mins"
     },
 //  10
     {
-      "image": "assets/img/what_3.png",
+      "image": "assets/photos/plyometric.png",
       "title": "Plyometric  Exercise",
-      "exercises": "14 Exercises",
-      "time": "20mins"
+      "exercises": "12 Exercises",
+      "time": "16mins"
     },
   ];
   final collectionRef = FirebaseFirestore.instance.collection("users");
+  final double maxiumValue = 1000;
 
   @override
   Widget build(BuildContext context) {
@@ -114,13 +116,19 @@ class _WorkoutTrackerViewState extends State<WorkoutTrackerView> {
             .doc(DateTime.now().month.toString())
             .snapshots(),
         builder: (context, snapshot) {
+          // for charts
+
+          //  /for charts
+
           List<String> image = [];
 
           List<int> caloriesBurntList = [];
           List<bool> likeList = [];
           List<bool> targetCompletion = [];
           List<String> nameList = [];
+          List<int> caloriesBurnt = [];
           List<dynamic> time = [];
+          List<dynamic> dataForGraph = [];
           //  Today workOut
           if (snapshot.hasData) {
             if (snapshot.data != null) {
@@ -132,6 +140,33 @@ class _WorkoutTrackerViewState extends State<WorkoutTrackerView> {
                 Map<String, dynamic> docs =
                     snapshot.data!.get(DateTime.now().day.toString());
                 List<String> searchElements = docs.keys.toList();
+
+                // chart
+                Map<String, dynamic> documentData =
+                    snapshot.data!.data() as Map<String, dynamic>;
+                List<String> filteredKeys = documentData.keys.toList();
+                filteredKeys
+                    .sort((a, b) => int.parse(a).compareTo(int.parse(b)));
+
+                // print(filteredKeys);
+
+                if (filteredKeys.length >= 8) {
+                  dataForGraph =
+                      filteredKeys.skip(filteredKeys.length - 7).toList();
+                }
+                // print(dataForGraph);
+                for (var p in dataForGraph) {
+                  if (documentData.containsKey(p.toString())) {
+                    Map<String, dynamic> mapping = documentData[p.toString()];
+
+                    // Iterate through the entries of the mapping
+                    for (var entry in mapping.entries) {
+                      // Check if the key is 'calories'
+                      caloriesBurnt.add(entry.value['caloriesBurnt']);
+                    }
+                  }
+                }
+                // chart
 
                 List sdata = docs.entries.toList();
 
@@ -164,18 +199,7 @@ class _WorkoutTrackerViewState extends State<WorkoutTrackerView> {
                     );
                   } else {}
                 }
-              } else {
-                // print(':sad');
-              }
-              // finished-workout
-
-              // List<String> finishedName = [];
-              // List<String> finishedImage = [];
-
-              // List<int> trueIndices = List<int>.generate(
-              //   targetCompletion.length,
-              //   (index) => index,
-              // ).where((index) => targetCompletion[index]).toList();
+              } else {}
 
               return Container(
                 decoration: BoxDecoration(
@@ -188,26 +212,28 @@ class _WorkoutTrackerViewState extends State<WorkoutTrackerView> {
                         centerTitle: true,
                         elevation: 0,
                         // pinned: true,
-                        // leading: InkWell(
-                        //   onTap: () {
-                        //     Navigator.pop(context);
-                        //   },
-                        //   child: Container(
-                        //     margin: const EdgeInsets.all(8),
-                        //     height: 40,
-                        //     width: 40,
-                        //     alignment: Alignment.center,
-                        //     decoration: BoxDecoration(
-                        //         color: TColor.lightGray,
-                        //         borderRadius: BorderRadius.circular(10)),
-                        //     child: Image.asset(
-                        //       "assets/img/black_btn.png",
-                        //       width: 15,
-                        //       height: 15,
-                        //       fit: BoxFit.contain,
-                        //     ),
-                        //   ),
-                        // ),
+                        leading: widget.from == "activity"
+                            ? InkWell(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Container(
+                                  margin: const EdgeInsets.all(8),
+                                  height: 40,
+                                  width: 40,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                      color: TColor.lightGray,
+                                      borderRadius: BorderRadius.circular(10)),
+                                  child: Image.asset(
+                                    "assets/img/black_btn.png",
+                                    width: 15,
+                                    height: 15,
+                                    fit: BoxFit.contain,
+                                  ),
+                                ),
+                              )
+                            : const SizedBox(),
                         title: Text(
                           "Workout Tracker",
                           style: TextStyle(
@@ -236,120 +262,200 @@ class _WorkoutTrackerViewState extends State<WorkoutTrackerView> {
                         //   )
                         // ],
                       ),
-                      SliverAppBar(
-                        backgroundColor: Colors.transparent,
-                        centerTitle: true,
-                        elevation: 0,
-                        leadingWidth: 0,
-                        leading: const SizedBox(),
-                        expandedHeight: media.width * 0.5,
-                        flexibleSpace: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          height: media.width * 0.5,
-                          width: double.maxFinite,
-                          child: LineChart(
-                            LineChartData(
-                              lineTouchData: LineTouchData(
-                                enabled: true,
-                                handleBuiltInTouches: false,
-                                touchCallback: (FlTouchEvent event,
-                                    LineTouchResponse? response) {
-                                  if (response == null ||
-                                      response.lineBarSpots == null) {
-                                    return;
-                                  }
-                                  // if (event is FlTapUpEvent) {
-                                  //   final spotIndex =
-                                  //       response.lineBarSpots!.first.spotIndex;
-                                  //   showingTooltipOnSpots.clear();
-                                  //   setState(() {
-                                  //     showingTooltipOnSpots.add(spotIndex);
-                                  //   });
-                                  // }
-                                },
-                                mouseCursorResolver: (FlTouchEvent event,
-                                    LineTouchResponse? response) {
-                                  if (response == null ||
-                                      response.lineBarSpots == null) {
-                                    return SystemMouseCursors.basic;
-                                  }
-                                  return SystemMouseCursors.click;
-                                },
-                                getTouchedSpotIndicator:
-                                    (LineChartBarData barData,
-                                        List<int> spotIndexes) {
-                                  return spotIndexes.map((index) {
-                                    return TouchedSpotIndicatorData(
-                                      FlLine(
+                      caloriesBurnt.isNotEmpty
+                          ? SliverAppBar(
+                              backgroundColor: Colors.transparent,
+                              centerTitle: true,
+                              elevation: 0, 
+                              expandedHeight: media.width * 0.5,
+                              flexibleSpace: Container(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 20),
+                                height: media.width * 0.5,
+                                width: double.maxFinite,
+                                child: LineChart(
+                                  LineChartData(
+                                    lineTouchData: LineTouchData(
+                                      enabled: true,
+                                      handleBuiltInTouches: false,
+                                      touchCallback: (FlTouchEvent event,
+                                          LineTouchResponse? response) {
+                                        if (response == null ||
+                                            response.lineBarSpots == null) {
+                                          return;
+                                        }
+                                        // if (event is FlTapUpEvent) {
+                                        //   final spotIndex =
+                                        //       response.lineBarSpots!.first.spotIndex;
+                                        //   showingTooltipOnSpots.clear();
+                                        //   setState(() {
+                                        //     showingTooltipOnSpots.add(spotIndex);
+                                        //   });
+                                        // }
+                                      },
+                                      mouseCursorResolver: (FlTouchEvent event,
+                                          LineTouchResponse? response) {
+                                        if (response == null ||
+                                            response.lineBarSpots == null) {
+                                          return SystemMouseCursors.basic;
+                                        }
+                                        return SystemMouseCursors.click;
+                                      },
+                                      getTouchedSpotIndicator:
+                                          (LineChartBarData barData,
+                                              List<int> spotIndexes) {
+                                        return spotIndexes.map((index) {
+                                          return TouchedSpotIndicatorData(
+                                            FlLine(
+                                              color: Colors.transparent,
+                                            ),
+                                            FlDotData(
+                                              show: true,
+                                              getDotPainter: (spot, percent,
+                                                      barData, index) =>
+                                                  FlDotCirclePainter(
+                                                radius: 3,
+                                                color: Colors.white,
+                                                strokeWidth: 3,
+                                                strokeColor:
+                                                    TColor.secondaryColor1,
+                                              ),
+                                            ),
+                                          );
+                                        }).toList();
+                                      },
+                                      touchTooltipData: LineTouchTooltipData(
+                                        tooltipBgColor: TColor.secondaryColor1,
+                                        tooltipRoundedRadius: 20,
+                                        getTooltipItems:
+                                            (List<LineBarSpot> lineBarsSpot) {
+                                          return lineBarsSpot
+                                              .map((lineBarSpot) {
+                                            return LineTooltipItem(
+                                              "${lineBarSpot.x.toInt()} mins ago",
+                                              const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            );
+                                          }).toList();
+                                        },
+                                      ),
+                                    ),
+                                    lineBarsData: [
+                                      LineChartBarData(
+                                          isCurved: true,
+                                          color: TColor.white,
+                                          barWidth: 4,
+                                          isStrokeCapRound: true,
+                                          dotData: FlDotData(show: false),
+                                          belowBarData:
+                                              BarAreaData(show: false),
+                                          spots: [
+                                            // data
+
+                                            FlSpot(
+                                                1,
+                                                (caloriesBurnt[0] /
+                                                        maxiumValue) *
+                                                    100),
+                                            FlSpot(
+                                                2,
+                                                (caloriesBurnt[1] /
+                                                        maxiumValue) *
+                                                    100),
+                                            FlSpot(
+                                                3,
+                                                (caloriesBurnt[2] /
+                                                        maxiumValue) *
+                                                    100),
+                                            FlSpot(
+                                                4,
+                                                (caloriesBurnt[3] /
+                                                        maxiumValue) *
+                                                    100),
+                                            FlSpot(
+                                                5,
+                                                (caloriesBurnt[4] /
+                                                        maxiumValue) *
+                                                    100),
+                                            FlSpot(
+                                                6,
+                                                (caloriesBurnt[5] /
+                                                        maxiumValue) *
+                                                    100),
+                                            FlSpot(
+                                                7,
+                                                (caloriesBurnt[6] /
+                                                        maxiumValue) *
+                                                    100),
+                                          ]),
+                                      // LineChartBarData(
+                                      //   isCurved: true,
+                                      //   color: TColor.white.withOpacity(0.5),
+                                      //   barWidth: 2,
+                                      //   isStrokeCapRound: true,
+                                      //   dotData: FlDotData(show: false),
+                                      //   belowBarData: BarAreaData(
+                                      //     show: false,
+                                      //   ),
+                                      //   spots: const [
+                                      //     // data
+                                      //     FlSpot(1, 80),
+                                      //     FlSpot(2, 50),
+                                      //     FlSpot(3, 90),
+                                      //     FlSpot(4, 40),
+                                      //     FlSpot(5, 80),
+                                      //     FlSpot(6, 35),
+                                      //     FlSpot(7, 60),
+                                      //   ],
+                                      // )
+                                    ],
+                                    minY: -0.5,
+                                    maxY: 110,
+                                    titlesData: FlTitlesData(
+                                        show: true,
+                                        leftTitles: AxisTitles(),
+                                        topTitles: AxisTitles(),
+                                        bottomTitles: AxisTitles(
+                                          sideTitles: bottomTitles,
+                                        ),
+                                        rightTitles: AxisTitles(
+                                          sideTitles: rightTitles,
+                                        )),
+                                    gridData: FlGridData(
+                                      show: true,
+                                      drawHorizontalLine: true,
+                                      horizontalInterval: 25,
+                                      drawVerticalLine: false,
+                                      getDrawingHorizontalLine: (value) {
+                                        return FlLine(
+                                          color: TColor.white.withOpacity(0.15),
+                                          strokeWidth: 3,
+                                        );
+                                      },
+                                    ),
+                                    borderData: FlBorderData(
+                                      show: true,
+                                      border: Border.all(
                                         color: Colors.transparent,
                                       ),
-                                      FlDotData(
-                                        show: true,
-                                        getDotPainter:
-                                            (spot, percent, barData, index) =>
-                                                FlDotCirclePainter(
-                                          radius: 3,
-                                          color: Colors.white,
-                                          strokeWidth: 3,
-                                          strokeColor: TColor.secondaryColor1,
-                                        ),
-                                      ),
-                                    );
-                                  }).toList();
-                                },
-                                touchTooltipData: LineTouchTooltipData(
-                                  tooltipBgColor: TColor.secondaryColor1,
-                                  tooltipRoundedRadius: 20,
-                                  getTooltipItems:
-                                      (List<LineBarSpot> lineBarsSpot) {
-                                    return lineBarsSpot.map((lineBarSpot) {
-                                      return LineTooltipItem(
-                                        "${lineBarSpot.x.toInt()} mins ago",
-                                        const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      );
-                                    }).toList();
-                                  },
-                                ),
-                              ),
-                              lineBarsData: lineBarsData1,
-                              minY: -0.5,
-                              maxY: 110,
-                              titlesData: FlTitlesData(
-                                  show: true,
-                                  leftTitles: AxisTitles(),
-                                  topTitles: AxisTitles(),
-                                  bottomTitles: AxisTitles(
-                                    sideTitles: bottomTitles,
+                                    ),
                                   ),
-                                  rightTitles: AxisTitles(
-                                    sideTitles: rightTitles,
-                                  )),
-                              gridData: FlGridData(
-                                show: true,
-                                drawHorizontalLine: true,
-                                horizontalInterval: 25,
-                                drawVerticalLine: false,
-                                getDrawingHorizontalLine: (value) {
-                                  return FlLine(
-                                    color: TColor.white.withOpacity(0.15),
-                                    strokeWidth: 2,
-                                  );
-                                },
-                              ),
-                              borderData: FlBorderData(
-                                show: true,
-                                border: Border.all(
-                                  color: Colors.transparent,
                                 ),
                               ),
-                            ),
-                          ),
-                        ),
-                      ),
+                            )
+                          : const SliverAppBar(
+                              backgroundColor: Colors.transparent,
+                              centerTitle: true,
+                              elevation: 0,
+                              title: Text(
+                                "Not enough data  to display graph",
+                                style: TextStyle(
+                                    fontSize: 12, color: Colors.white),
+                              ),
+                            )
                     ];
                   },
                   body: Container(
@@ -432,29 +538,39 @@ class _WorkoutTrackerViewState extends State<WorkoutTrackerView> {
                                       fontSize: 16,
                                       fontWeight: FontWeight.w700),
                                 ),
-                                TextButton(
-                                  onPressed: () {
-                                    //TODO: implement see more
-                                  },
-                                  child: Text(
-                                    "See More",
-                                    style: TextStyle(
-                                      color: TColor.gray,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                )
+                                // TextButton(
+                                //   onPressed: () {
+                                //   },
+                                //   child: Text(
+                                //     "See More",
+                                //     style: TextStyle(
+                                //       color: TColor.gray,
+                                //       fontSize: 14,
+                                //       fontWeight: FontWeight.w700,
+                                //     ),
+                                //   ),
+                                // )
                               ],
                             ),
-                            Text(
-                              "Swipe the button to mark completed",
-                              style: TextStyle(
-                                color: TColor.black,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
+                            nameList.isNotEmpty
+                                ? Text(
+                                    "Swipe the button to mark completed",
+                                    style: TextStyle(
+                                      color: TColor.black,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  )
+                                : Center(
+                                    child: Text(
+                                      "No workout scheduled yet",
+                                      style: TextStyle(
+                                        color: TColor.black,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  ),
                             ListView.builder(
                                 padding: EdgeInsets.zero,
                                 physics: const NeverScrollableScrollPhysics(),
@@ -471,6 +587,8 @@ class _WorkoutTrackerViewState extends State<WorkoutTrackerView> {
                                           builder: (context) =>
                                               WorkoutDetailView(
                                             indexingRef: index,
+                                            imagePath: workOutArr[index]
+                                                ['image'],
                                             forWhat: "workout",
                                             dObj: wObj,
                                             workOutName: nameList[index],
@@ -532,6 +650,8 @@ class _WorkoutTrackerViewState extends State<WorkoutTrackerView> {
                                               builder: (context) =>
                                                   WorkoutDetailView(
                                                     forWhat: "view",
+                                                    imagePath: workOutArr[index]
+                                                        ['image'],
                                                     indexingRef: index,
                                                     workOutName:
                                                         workOutArr[index]
@@ -539,7 +659,12 @@ class _WorkoutTrackerViewState extends State<WorkoutTrackerView> {
                                                     dObj: wObj,
                                                   )));
                                     },
-                                    child: WhatTrainRow(wObj: wObj));
+                                    child: WhatTrainRow(
+                                      imagePath: workOutArr[index]['image'],
+                                      wObj: wObj,
+                                      workoutName: workOutArr[index]['title'],
+                                      indexingRef: index,
+                                    ));
                               },
                             ),
 
@@ -574,48 +699,73 @@ class _WorkoutTrackerViewState extends State<WorkoutTrackerView> {
         ),
       );
 
-  List<LineChartBarData> get lineBarsData1 => [
-        lineChartBarData1_1,
-        lineChartBarData1_2,
-      ];
+  // List<LineChartBarData> get lineBarsData1 => [
+  //       lineChartBarData1_1,
+  //       lineChartBarData1_2,
+  //     ];
 
-  LineChartBarData get lineChartBarData1_1 => LineChartBarData(
-        isCurved: true,
-        color: TColor.white,
-        barWidth: 4,
-        isStrokeCapRound: true,
-        dotData: FlDotData(show: false),
-        belowBarData: BarAreaData(show: false),
-        spots: const [
-          FlSpot(1, 35),
-          FlSpot(2, 70),
-          FlSpot(3, 40),
-          FlSpot(4, 80),
-          FlSpot(5, 25),
-          FlSpot(6, 70),
-          FlSpot(7, 35),
-        ],
-      );
+  // Widget LineChartBarData lineChart1(){
+  //   return LineChartBarData(
+  //       isCurved: true,
+  //       color: TColor.white,
+  //       barWidth: 4,
+  //       isStrokeCapRound: true,
+  //       dotData: FlDotData(show: false),
+  //       belowBarData: BarAreaData(show: false),
+  //       spots: const [
+  //         // data
 
-  LineChartBarData get lineChartBarData1_2 => LineChartBarData(
-        isCurved: true,
-        color: TColor.white.withOpacity(0.5),
-        barWidth: 2,
-        isStrokeCapRound: true,
-        dotData: FlDotData(show: false),
-        belowBarData: BarAreaData(
-          show: false,
-        ),
-        spots: const [
-          FlSpot(1, 80),
-          FlSpot(2, 50),
-          FlSpot(3, 90),
-          FlSpot(4, 40),
-          FlSpot(5, 80),
-          FlSpot(6, 35),
-          FlSpot(7, 60),
-        ],
-      );
+  //         FlSpot(1, 35),
+  //         FlSpot(2, 70),
+  //         FlSpot(3, 40),
+  //         FlSpot(4, 80),
+  //         FlSpot(5, 25),
+  //         FlSpot(6, 70),
+  //         FlSpot(7, 35),
+  //       ],
+  //     );
+  // }
+
+  // LineChartBarData get lineChartBarData1_1 => LineChartBarData(
+  //       isCurved: true,
+  //       color: TColor.white,
+  //       barWidth: 4,
+  //       isStrokeCapRound: true,
+  //       dotData: FlDotData(show: false),
+  //       belowBarData: BarAreaData(show: false),
+  //       spots: const [
+  //         // data
+
+  //         FlSpot(1, 35),
+  //         FlSpot(2, 70),
+  //         FlSpot(3, 40),
+  //         FlSpot(4, 80),
+  //         FlSpot(5, 25),
+  //         FlSpot(6, 70),
+  //         FlSpot(7, 35),
+  //       ],
+  //     );
+
+  // LineChartBarData get lineChartBarData1_2 => LineChartBarData(
+  //       isCurved: true,
+  //       color: TColor.white.withOpacity(0.5),
+  //       barWidth: 2,
+  //       isStrokeCapRound: true,
+  //       dotData: FlDotData(show: false),
+  //       belowBarData: BarAreaData(
+  //         show: false,
+  //       ),
+  //       spots: const [
+  //         // data
+  //         FlSpot(1, 80),
+  //         FlSpot(2, 50),
+  //         FlSpot(3, 90),
+  //         FlSpot(4, 40),
+  //         FlSpot(5, 80),
+  //         FlSpot(6, 35),
+  //         FlSpot(7, 60),
+  //       ],
+  //     );
 
   SideTitles get rightTitles => SideTitles(
         getTitlesWidget: rightTitleWidgets,

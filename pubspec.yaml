@@ -52,6 +52,11 @@ dependencies:
   cloud_firestore: ^4.13.6
   provider: ^6.1.1
   image_picker: 0.8.9
+  permission_handler: ^11.1.0
+  pedometer: ^4.0.1
+  shared_preferences: ^2.2.2
+  sensors_plus: ^4.0.2
+  google_fonts: ^6.1.0
 dependency_overrides: 
   intl: ^0.18.1
 
@@ -82,6 +87,10 @@ flutter:
   assets:
     - assets/font/
     - assets/img/
+    - assets/photos/
+    - assets/fullbody/
+    - assets/alarm/
+    - assets/steps/
     - assets/
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

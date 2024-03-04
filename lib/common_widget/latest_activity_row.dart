@@ -38,14 +38,14 @@ class LatestActivityRow extends StatelessWidget {
                   name.toString(),
                   style: TextStyle(
                       color: TColor.black,
-                      fontSize: 12,
+                      fontSize: 15,
                       fontWeight: FontWeight.w500),
                 ),
                 Text(
-                  calories.toString(),
+                  "Calories burnt:  $calories",
                   style: TextStyle(
                     color: TColor.gray,
-                    fontSize: 10,
+                    fontSize: 13,
                   ),
                 ),
               ],

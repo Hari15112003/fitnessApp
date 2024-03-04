@@ -246,6 +246,7 @@ class _CompleteProfileViewState extends State<CompleteProfileView>
                         children: [
                           Expanded(
                             child: RoundTextField(
+                              keyboardType: TextInputType.number,
                               controller: heightController,
                               hitText: "Your Height",
                               icon: "assets/img/hight.png",

@@ -15,7 +15,7 @@ class AuthWrapper extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           // Show a loading indicator while waiting for the auth state
           return const CircularProgressIndicator();
-        } else if (snapshot.hasData && snapshot.data is User) {
+        } else if (snapshot.hasData) {
           // User is signed in, navigate to the desired page
           return const WelcomeView();
           // return const SplashScreen();

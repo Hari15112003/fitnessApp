@@ -4,8 +4,8 @@ import 'package:fitness/common_widget/round_textfield.dart';
 import 'package:fitness/provider/firebase/auth_provider.dart';
 import 'package:fitness/utils/snackbar.dart';
 import 'package:fitness/view/login/signup_view.dart';
-import 'package:fitness/view/login/welcome_view.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -29,6 +29,7 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
+    final ap = Provider.of<MyAuthProvider>(context, listen: false);
     var media = MediaQuery.of(context).size;
     return SafeArea(
       child: Scaffold(
@@ -116,20 +117,11 @@ class _LoginViewState extends State<LoginView> {
                     onPressed: () async {
                       if (emailController.text.trim().isNotEmpty &&
                           passwordController.text.trim().isNotEmpty) {
-                        await MyAuthProvider()
-                            .signInWithEmailAndPassword(
-                              context: context,
-                              email: emailController.text.trim(),
-                              password: passwordController.text.trim(),
-                            )
-                            .whenComplete(
-                              () => Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const WelcomeView(),
-                                ),
-                              ),
-                            );
+                        await ap.signInWithEmailAndPassword(
+                          context: context,
+                          email: emailController.text.trim(),
+                          password: passwordController.text.trim(),
+                        );
                       } else {
                         showSnackBar(
                             context: context, content: "Enter the details");

@@ -2,10 +2,19 @@ import 'package:fitness/common_widget/round_button.dart';
 import 'package:flutter/material.dart';
 
 import '../common/colo_extension.dart';
+import '../view/workout_tracker/workour_detail_view.dart';
 
 class WhatTrainRow extends StatelessWidget {
   final Map wObj;
-  const WhatTrainRow({super.key, required this.wObj});
+  final int indexingRef;
+  final String workoutName;
+  final String imagePath;
+  const WhatTrainRow(
+      {super.key,
+      required this.wObj,
+      required this.workoutName,
+      required this.indexingRef,
+      required this.imagePath});
 
   @override
   Widget build(BuildContext context) {
@@ -60,15 +69,16 @@ class WhatTrainRow extends StatelessWidget {
                           elevation: 0.05,
                           fontWeight: FontWeight.w400,
                           onPressed: () {
-                            //  Navigator.push(
-                            //               context,
-                                          // MaterialPageRoute(
-                                          //     builder: (context) =>
-                                          //         WorkoutDetailView(
-                                          //           workOutName: whatArr[index]
-                                          //               ['title'],
-                                          //           dObj: wObj,
-                                          //         )));
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => WorkoutDetailView(
+                                          indexingRef: indexingRef,
+                                          imagePath: imagePath,
+                                          workOutName: workoutName,
+                                          forWhat: 'nav',
+                                          dObj: wObj,
+                                        )));
                           }),
                     )
                   ],

@@ -27,7 +27,7 @@ class AddScheduleView extends StatefulWidget {
 }
 
 class _AddScheduleViewState extends State<AddScheduleView> {
-  String time = "00:00";
+  String time = "${DateTime.now().hour}:${DateTime.now().minute}";
   String difficultyLevel = "Beginner";
   @override
   Widget build(BuildContext context) {
@@ -64,26 +64,26 @@ class _AddScheduleViewState extends State<AddScheduleView> {
           style: TextStyle(
               color: TColor.black, fontSize: 16, fontWeight: FontWeight.w700),
         ),
-        actions: [
-          InkWell(
-            onTap: () {},
-            child: Container(
-              margin: const EdgeInsets.all(8),
-              height: 40,
-              width: 40,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                  color: TColor.lightGray,
-                  borderRadius: BorderRadius.circular(10)),
-              child: Image.asset(
-                "assets/img/more_btn.png",
-                width: 15,
-                height: 15,
-                fit: BoxFit.contain,
-              ),
-            ),
-          )
-        ],
+        // actions: [
+        //   InkWell(
+        //     onTap: () {},
+        //     child: Container(
+        //       margin: const EdgeInsets.all(8),
+        //       height: 40,
+        //       width: 40,
+        //       alignment: Alignment.center,
+        //       decoration: BoxDecoration(
+        //           color: TColor.lightGray,
+        //           borderRadius: BorderRadius.circular(10)),
+        //       child: Image.asset(
+        //         "assets/img/more_btn.png",
+        //         width: 15,
+        //         height: 15,
+        //         fit: BoxFit.contain,
+        //       ),
+        //     ),
+        //   )
+        // ],
       ),
       backgroundColor: TColor.white,
       body: Container(
