@@ -155,7 +155,7 @@ class _SignUpViewState extends State<SignUpView> {
                             firstNameController.text.trim().isNotEmpty &&
                             lastNameController.text.trim().isNotEmpty &&
                             passwordController.text.trim().isNotEmpty) {
-                          Navigator.pushReplacement(
+                          Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => CompleteProfileView(

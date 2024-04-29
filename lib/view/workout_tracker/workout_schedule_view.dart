@@ -139,7 +139,6 @@ class _WorkoutScheduleViewState extends State<WorkoutScheduleView> {
               .doc(_selectedDateAppBBar.month.toString())
               .snapshots(),
           builder: (context, snapshot) {
-
             List<int> caloriesBurntList = [];
             List<bool> likeList = [];
             List<bool> targetCompletion = [];
@@ -225,6 +224,7 @@ class _WorkoutScheduleViewState extends State<WorkoutScheduleView> {
                         )),
                     weekDay: WeekDay.short,
                     dayNameFontSize: 12,
+                    
                     dayNumberFontSize: 16,
                     dayBGColor: Colors.grey.withOpacity(0.15),
                     titleSpaceBetween: 15,
@@ -236,7 +236,8 @@ class _WorkoutScheduleViewState extends State<WorkoutScheduleView> {
                     locale: 'en',
                     initialDate: DateTime.now(),
                     calendarEventColor: TColor.primaryColor2,
-                    firstDate: DateTime.now(),
+                    firstDate:
+                        DateTime.now().subtract(const Duration(days: 60)),
                     lastDate: DateTime.now().add(const Duration(days: 60)),
                     onDateSelected: (date) {
                       _selectedDateAppBBar = date;
@@ -290,7 +291,8 @@ class _WorkoutScheduleViewState extends State<WorkoutScheduleView> {
                                                 .toString());
                                       },
                                       background: const Icon(Icons.delete),
-                                      secondaryBackground: const Icon(Icons.delete),
+                                      secondaryBackground:
+                                          const Icon(Icons.delete),
                                       child: Container(
                                           margin: const EdgeInsets.symmetric(
                                               vertical: 8, horizontal: 2),

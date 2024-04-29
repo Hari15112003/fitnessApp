@@ -266,7 +266,7 @@ class _WorkoutTrackerViewState extends State<WorkoutTrackerView> {
                           ? SliverAppBar(
                               backgroundColor: Colors.transparent,
                               centerTitle: true,
-                              elevation: 0, 
+                              elevation: 0,
                               expandedHeight: media.width * 0.5,
                               flexibleSpace: Container(
                                 padding:
@@ -448,6 +448,7 @@ class _WorkoutTrackerViewState extends State<WorkoutTrackerView> {
                             )
                           : const SliverAppBar(
                               backgroundColor: Colors.transparent,
+                              leading: SizedBox(),
                               centerTitle: true,
                               elevation: 0,
                               title: Text(
